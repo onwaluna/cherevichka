@@ -1585,3 +1585,40 @@ export const WALKING_TOURS = [
 ];
 
 export const TOURIST_SURVIVAL_TIPS = COUNTRY_SURVIVAL_GUIDES;
+
+export const DESIGN_PANELS = {
+  header: {
+    bgColor: "#FAF7EE",
+    bgImage: "",
+    target: "header"
+  },
+  hero: {
+    bgImage: "",
+    overlayOpacity: 45,
+    titleColor: "#FFFFFF",
+    subtitleColor: "#E5DFC9"
+  },
+  pillars: {
+    clothingImg: "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1600&q=85",
+    shoesImg: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=1600&q=85",
+    vintageImg: "https://images.unsplash.com/photo-1520006403909-838d6b92c22e?auto=format&fit=crop&w=1600&q=85",
+    jewelryImg: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1600&q=85"
+  },
+  manifesto: {
+    bgImage: "",
+    overlayOpacity: 20
+  }
+};
+
+export const CUSTOM_COLORS = {
+  redOchre: "#913731",
+  babyBlue: "#B5C8D4",
+  bgPrimary: "#FAF7EE",
+  textPrimary: "#161413",
+  textSecondary: "#57524E"
+};
+
+export const CUSTOM_FONTS = {
+  headerFont: "'Cormorant Garamond', serif",
+  bodyFont: "'Plus Jakarta Sans', sans-serif"
+};

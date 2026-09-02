@@ -623,6 +623,42 @@ function saveSpotsToLocalStorage() {
 }
 
 /* ==========================================================================
+   IMAGE COMPRESSION & FILE UPLOAD HELPER
+   ========================================================================== */
+
+function compressImageFile(file, maxDimension = 1400, quality = 0.85) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxDimension || height > maxDimension) {
+          if (width > height) {
+            height = Math.round((height * maxDimension) / width);
+            width = maxDimension;
+          } else {
+            width = Math.round((width * maxDimension) / height);
+            height = maxDimension;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/webp', quality);
+        resolve(dataUrl);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ==========================================================================
    DESIGN PANELS & BACKGROUNDS CUSTOMIZER
    ========================================================================== */
 
@@ -788,17 +824,19 @@ function initDesignPanels() {
   });
 
   // Handle local file upload for Hero
-  document.getElementById('fileHeroBg').addEventListener('change', (e) => {
+  document.getElementById('fileHeroBg').addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        p.hero.bgImage = event.target.result;
+      try {
+        const compressed = await compressImageFile(file, 1600, 0.85);
+        p.hero.bgImage = compressed;
         inpHeroBgUrl.value = '';
-        heroPreviewBanner.style.backgroundImage = `url('${p.hero.bgImage}')`;
-        showToast('Loaded hero image from PC!');
-      };
-      reader.readAsDataURL(file);
+        heroPreviewBanner.style.backgroundImage = `url('${compressed}')`;
+        safeStorage.set('cherevichka_design_panels', state.designPanels);
+        showToast('Loaded hero image (compressed & saved)!');
+      } catch (err) {
+        showToast('Error loading image');
+      }
     }
   });
 
@@ -847,16 +885,18 @@ function initDesignPanels() {
   rangeManifestoOverlay.value = p.manifesto.overlayOpacity;
   lblManifestoOverlayVal.textContent = p.manifesto.overlayOpacity + '%';
 
-  document.getElementById('fileManifestoBg').addEventListener('change', (e) => {
+  document.getElementById('fileManifestoBg').addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        p.manifesto.bgImage = event.target.result;
+      try {
+        const compressed = await compressImageFile(file, 1600, 0.85);
+        p.manifesto.bgImage = compressed;
         inpManifestoBgUrl.value = '';
-        showToast('Loaded manifesto texture from PC!');
-      };
-      reader.readAsDataURL(file);
+        safeStorage.set('cherevichka_design_panels', state.designPanels);
+        showToast('Loaded manifesto texture (compressed & saved)!');
+      } catch (err) {
+        showToast('Error loading image');
+      }
     }
   });
 
@@ -896,18 +936,19 @@ function setupPillarUploader(fileId, urlInputId, thumbId, stateKey) {
     }
   }
 
-  document.getElementById(fileId).addEventListener('change', (e) => {
+  document.getElementById(fileId).addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        p[stateKey] = event.target.result;
-        thumb.src = event.target.result;
+      try {
+        const compressed = await compressImageFile(file, 1400, 0.85);
+        p[stateKey] = compressed;
+        thumb.src = compressed;
         urlInp.value = '';
         safeStorage.set('cherevichka_design_panels', state.designPanels);
-        showToast('Updated category cover photo!');
-      };
-      reader.readAsDataURL(file);
+        showToast('Updated category cover photo (compressed & saved)!');
+      } catch (err) {
+        showToast('Error loading image');
+      }
     }
   });
 
@@ -916,6 +957,10 @@ function setupPillarUploader(fileId, urlInputId, thumbId, stateKey) {
     if (val) {
       p[stateKey] = val;
       thumb.src = val;
+      safeStorage.set('cherevichka_design_panels', state.designPanels);
+    }
+  });
+}
       safeStorage.set('cherevichka_design_panels', state.designPanels);
     }
   });

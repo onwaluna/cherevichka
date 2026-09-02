@@ -1,34 +1,66 @@
 import { I18N as BASE_I18N, SPOTS_DATA as BASE_SPOTS, WALKING_TOURS, COUNTRY_SURVIVAL_GUIDES, DESIGN_PANELS as BASE_PANELS, CUSTOM_COLORS as BASE_COLORS, CUSTOM_FONTS as BASE_FONTS } from './data/spots.js';
 
 /* ==========================================================================
-   DYNAMIC DATA ADAPTER (READS FROM LOCALSTORAGE IF ADMIN HAS EDITED)
+   SAFE PROTOCOL-AGNOSTIC & PRIVATE-MODE STORAGE ADAPTER
+   (Works smoothly across incognito mode, safari, chrome & mobile devices)
+   ========================================================================== */
+
+const memoryStore = {};
+
+const safeStorage = {
+  get(key) {
+    try {
+      const val = localStorage.getItem(key);
+      if (val !== null) return val;
+    } catch (e) {}
+    try {
+      const sVal = sessionStorage.getItem(key);
+      if (sVal !== null) return sVal;
+    } catch (e) {}
+    return memoryStore[key] || null;
+  },
+  getJSON(key, fallback) {
+    const raw = safeStorage.get(key);
+    if (!raw) return fallback;
+    try {
+      return JSON.parse(raw);
+    } catch (e) {
+      return fallback;
+    }
+  },
+  set(key, val) {
+    const str = typeof val === 'string' ? val : JSON.stringify(val);
+    try { localStorage.setItem(key, str); } catch (e) {}
+    try { sessionStorage.setItem(key, str); } catch (e) {}
+    memoryStore[key] = str;
+  },
+  remove(key) {
+    try { localStorage.removeItem(key); } catch (e) {}
+    try { sessionStorage.removeItem(key); } catch (e) {}
+    delete memoryStore[key];
+  }
+};
+
+/* ==========================================================================
+   DYNAMIC DATA ADAPTER (READS FROM ADMIN EDITS OR DEFAULTS)
    ========================================================================== */
 
 function getSpots() {
-  const custom = localStorage.getItem('cherevichka_custom_spots');
-  if (custom) {
-    try { 
-      const parsed = JSON.parse(custom);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    } catch (e) {}
+  const custom = safeStorage.getJSON('cherevichka_custom_spots', null);
+  if (custom && Array.isArray(custom) && custom.length > 0) {
+    return custom;
   }
   return BASE_SPOTS;
 }
 
 function getI18N() {
-  const custom = localStorage.getItem('cherevichka_custom_i18n');
-  if (custom) {
-    try { return JSON.parse(custom); } catch (e) {}
-  }
+  const custom = safeStorage.getJSON('cherevichka_custom_i18n', null);
+  if (custom) return custom;
   return BASE_I18N;
 }
 
 function applyCustomColors() {
-  const custom = localStorage.getItem('cherevichka_custom_colors');
-  let colors = BASE_COLORS;
-  if (custom) {
-    try { colors = JSON.parse(custom); } catch (e) {}
-  }
+  const colors = safeStorage.getJSON('cherevichka_custom_colors', BASE_COLORS);
   if (colors) {
     if (colors.redOchre) document.documentElement.style.setProperty('--color-red-ochre', colors.redOchre);
     if (colors.babyBlue) document.documentElement.style.setProperty('--color-baby-blue', colors.babyBlue);
@@ -39,11 +71,7 @@ function applyCustomColors() {
 }
 
 function applyCustomFonts() {
-  const custom = localStorage.getItem('cherevichka_custom_fonts');
-  let fonts = BASE_FONTS;
-  if (custom) {
-    try { fonts = JSON.parse(custom); } catch (e) {}
-  }
+  const fonts = safeStorage.getJSON('cherevichka_custom_fonts', BASE_FONTS);
   if (fonts) {
     if (fonts.headerFont) document.documentElement.style.setProperty('--font-serif', fonts.headerFont);
     if (fonts.bodyFont) document.documentElement.style.setProperty('--font-sans', fonts.bodyFont);
@@ -51,15 +79,10 @@ function applyCustomFonts() {
 }
 
 function applyCustomDesignPanels() {
-  const custom = localStorage.getItem('cherevichka_design_panels');
-  let panels = BASE_PANELS;
-  if (custom) {
-    try { panels = JSON.parse(custom); } catch (e) {}
-  }
+  const panels = safeStorage.getJSON('cherevichka_design_panels', BASE_PANELS);
   if (!panels) return;
   try {
     // 0. Top Header Bar & Global Background Layer (Color Fill + Image)
-    const siteHeader = document.querySelector('.site-header');
     const globalBgLayer = document.getElementById('globalBgLayer');
 
     // 0.1 Color Fill Application
@@ -103,7 +126,7 @@ function applyCustomDesignPanels() {
     }
 
     // 2. Pillars covers
-    const p = panels.pillars || BASE_PANELS.pillars;
+    const p = panels.pillars || (BASE_PANELS && BASE_PANELS.pillars);
     if (p) {
       const imgClothing = document.getElementById('imgPillarClothing');
       const imgShoes = document.getElementById('imgPillarShoes');
@@ -139,7 +162,7 @@ function applyCustomDesignPanels() {
 
 const state = {
   page: 'home',    // 'home' | 'directory'
-  lang: localStorage.getItem('cherevichka_lang') || 'en',
+  lang: safeStorage.get('cherevichka_lang') || 'en',
   city: 'all',     // 'all' | 'russia' | 'japan' | 'uae' | 'bali' | 'thailand'
   survivalCountry: 'russia',
   category: 'all', // 'all' | 'clothing' | 'shoes-bags' | 'vintage-archive' | 'jewelry-accs'
@@ -147,9 +170,9 @@ const state = {
   price: 'all',
   searchQuery: '',
   view: 'split',   // 'split' | 'grid' | 'map'
-  favorites: new Set(JSON.parse(localStorage.getItem('cherevichka_favs') || '[]')),
+  favorites: new Set(safeStorage.getJSON('cherevichka_favs', [])),
   selectedSpotId: null,
-  theme: localStorage.getItem('cherevichka_theme') || 'light'
+  theme: safeStorage.get('cherevichka_theme') || 'light'
 };
 
 let map = null;
@@ -193,29 +216,56 @@ const favoritesModal = document.getElementById('favoritesModal');
 const submitSpotForm = document.getElementById('submitSpotForm');
 
 /* ==========================================================================
+   SAFE DOM HELPERS (PREVENTS ANY CRASH ON MISSING ELEMENTS)
+   ========================================================================== */
+
+function setText(id, text) {
+  if (text === undefined || text === null) return;
+  const el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+
+function setHTML(id, html) {
+  if (html === undefined || html === null) return;
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = html;
+}
+
+/* ==========================================================================
    INITIALIZATION
    ========================================================================== */
 
-document.addEventListener('DOMContentLoaded', () => {
-  applyCustomColors();
-  applyCustomFonts();
-  applyCustomDesignPanels();
-  applyTheme(state.theme);
-  setupEventListeners();
-  applyLanguage(state.lang);
-  updateFavoritesBadge();
-  renderSpotlight();
+function initApp() {
+  try { applyCustomColors(); } catch (e) { console.error('applyCustomColors error:', e); }
+  try { applyCustomFonts(); } catch (e) { console.error('applyCustomFonts error:', e); }
+  try { applyCustomDesignPanels(); } catch (e) { console.error('applyCustomDesignPanels error:', e); }
+  try { applyTheme(state.theme); } catch (e) { console.error('applyTheme error:', e); }
+  try { setupEventListeners(); } catch (e) { console.error('setupEventListeners error:', e); }
+  try { applyLanguage(state.lang); } catch (e) { console.error('applyLanguage error:', e); }
+  try { updateFavoritesBadge(); } catch (e) { console.error('updateFavoritesBadge error:', e); }
+  try { renderSpotlight(); } catch (e) { console.error('renderSpotlight error:', e); }
 
   // Prada Header Scroll Effect
-  const siteHeader = document.querySelector('.site-header');
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 60) {
-      siteHeader.classList.add('scrolled-header');
-    } else {
-      siteHeader.classList.remove('scrolled-header');
+  try {
+    const siteHeader = document.querySelector('.site-header');
+    if (siteHeader) {
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 60) {
+          siteHeader.classList.add('scrolled-header');
+        } else {
+          siteHeader.classList.remove('scrolled-header');
+        }
+      }, { passive: true });
     }
-  }, { passive: true });
-});
+  } catch (e) {}
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  // If DOM is already ready (common with async module scripts in incognito)
+  initApp();
+}
 
 /* ==========================================================================
    PAGE ROUTING / NAVIGATION (HOME <-> DIRECTORY)
@@ -226,16 +276,16 @@ function navigateTo(page, options = {}) {
   document.body.classList.toggle('in-directory', page === 'directory');
 
   if (page === 'home') {
-    pageHome.classList.add('active-page');
-    pageDirectory.classList.remove('active-page');
-    navTabHome.classList.add('active');
-    navTabDirectory.classList.remove('active');
+    if (pageHome) pageHome.classList.add('active-page');
+    if (pageDirectory) pageDirectory.classList.remove('active-page');
+    if (navTabHome) navTabHome.classList.add('active');
+    if (navTabDirectory) navTabDirectory.classList.remove('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } else if (page === 'directory') {
-    pageHome.classList.remove('active-page');
-    pageDirectory.classList.add('active-page');
-    navTabHome.classList.remove('active');
-    navTabDirectory.classList.add('active');
+    if (pageHome) pageHome.classList.remove('active-page');
+    if (pageDirectory) pageDirectory.classList.add('active-page');
+    if (navTabHome) navTabHome.classList.remove('active');
+    if (navTabDirectory) navTabDirectory.classList.add('active');
 
     // If options provided, apply them
     if (options.category) {
@@ -270,7 +320,7 @@ function navigateTo(page, options = {}) {
 
 function applyLanguage(lang) {
   state.lang = lang;
-  localStorage.setItem('cherevichka_lang', lang);
+  safeStorage.set('cherevichka_lang', lang);
   document.documentElement.lang = lang;
 
   document.querySelectorAll('.lang-btn').forEach(b => {
@@ -279,121 +329,122 @@ function applyLanguage(lang) {
 
   const allI18n = getI18N();
   const t = allI18n[lang] || allI18n.en;
+  if (!t) return;
 
   // Header & Brand
-  document.getElementById('txtBrandTagline').textContent = t.brandTagline;
-  document.getElementById('navTabHome').textContent = t.navHome;
-  document.getElementById('navTabDirectory').textContent = t.navDirectory;
-  document.getElementById('navTabTours').textContent = t.navTours;
-  document.getElementById('navTabSurvival').textContent = t.navSurvival;
-  document.getElementById('txtSubmitSpot').textContent = t.navSubmit;
+  setText('txtBrandTagline', t.brandTagline);
+  setText('navTabHome', t.navHome);
+  setText('navTabDirectory', t.navDirectory);
+  setText('navTabTours', t.navTours);
+  setText('navTabSurvival', t.navSurvival);
+  setText('txtSubmitSpot', t.navSubmit);
 
   // Home Hero
-  document.getElementById('txtHeroBadge').textContent = t.heroBadge;
-  document.getElementById('txtHeroTitle').innerHTML = t.heroTitle;
-  document.getElementById('txtHeroSubtitle').textContent = t.heroSubtitle;
-  document.getElementById('txtHeroCtaExplore').textContent = t.heroCtaExplore;
-  if (document.getElementById('txtHeroCtaRussia')) document.getElementById('txtHeroCtaRussia').textContent = t.heroCtaRussia;
-  if (document.getElementById('txtHeroCtaJapan')) document.getElementById('txtHeroCtaJapan').textContent = t.heroCtaJapan;
-  if (document.getElementById('txtHeroCtaBali')) document.getElementById('txtHeroCtaBali').textContent = t.heroCtaBali;
-  if (document.getElementById('txtHeroCtaDubai')) document.getElementById('txtHeroCtaDubai').textContent = t.heroCtaDubai;
-  if (document.getElementById('txtHeroCtaThai')) document.getElementById('txtHeroCtaThai').textContent = t.destThailand || 'Thailand (Bangkok)';
+  setText('txtHeroBadge', t.heroBadge);
+  setHTML('txtHeroTitle', t.heroTitle);
+  setText('txtHeroSubtitle', t.heroSubtitle);
+  setText('txtHeroCtaExplore', t.heroCtaExplore);
+  setText('txtHeroCtaRussia', t.heroCtaRussia);
+  setText('txtHeroCtaJapan', t.heroCtaJapan);
+  setText('txtHeroCtaBali', t.heroCtaBali);
+  setText('txtHeroCtaDubai', t.heroCtaDubai);
+  setText('txtHeroCtaThai', t.destThailand || 'Thailand (Bangkok)');
 
   // Home Pillars
-  document.getElementById('txtPillarsTag').textContent = t.pillarsTag;
-  document.getElementById('txtPillarsTitle').textContent = t.pillarsTitle;
-  document.getElementById('txtPillarsSub').textContent = t.pillarsSubtitle;
-  document.getElementById('txtPillarClothingTitle').textContent = t.pillarClothingTitle;
-  document.getElementById('txtPillarClothingDesc').textContent = t.pillarClothingDesc;
-  document.getElementById('txtPillarShoesTitle').textContent = t.pillarShoesTitle;
-  document.getElementById('txtPillarShoesDesc').textContent = t.pillarShoesDesc;
-  document.getElementById('txtPillarVintageTitle').textContent = t.pillarVintageTitle;
-  document.getElementById('txtPillarVintageDesc').textContent = t.pillarVintageDesc;
-  document.getElementById('txtPillarJewelryTitle').textContent = t.pillarJewelryTitle;
-  document.getElementById('txtPillarJewelryDesc').textContent = t.pillarJewelryDesc;
-  document.getElementById('txtPillarEnter1').textContent = t.pillarEnter;
-  document.getElementById('txtPillarEnter2').textContent = t.pillarEnter;
-  document.getElementById('txtPillarEnter3').textContent = t.pillarEnter;
-  document.getElementById('txtPillarEnter4').textContent = t.pillarEnter;
+  setText('txtPillarsTag', t.pillarsTag);
+  setText('txtPillarsTitle', t.pillarsTitle);
+  setText('txtPillarsSub', t.pillarsSubtitle);
+  setText('txtPillarClothingTitle', t.pillarClothingTitle);
+  setText('txtPillarClothingDesc', t.pillarClothingDesc);
+  setText('txtPillarShoesTitle', t.pillarShoesTitle);
+  setText('txtPillarShoesDesc', t.pillarShoesDesc);
+  setText('txtPillarVintageTitle', t.pillarVintageTitle);
+  setText('txtPillarVintageDesc', t.pillarVintageDesc);
+  setText('txtPillarJewelryTitle', t.pillarJewelryTitle);
+  setText('txtPillarJewelryDesc', t.pillarJewelryDesc);
+  setText('txtPillarEnter1', t.pillarEnter);
+  setText('txtPillarEnter2', t.pillarEnter);
+  setText('txtPillarEnter3', t.pillarEnter);
+  setText('txtPillarEnter4', t.pillarEnter);
 
   // Home Manifesto
-  document.getElementById('txtManifestoTag').textContent = t.manifestoTag;
-  document.getElementById('txtManifestoTitle').textContent = t.manifestoTitle;
-  document.getElementById('txtManifestoP1').textContent = t.manifestoP1;
-  document.getElementById('txtManifestoP2').textContent = t.manifestoP2;
-  document.getElementById('txtMStat1').textContent = t.manifestoStat1;
-  document.getElementById('txtMStat2').textContent = t.manifestoStat2;
-  document.getElementById('txtMStat3').textContent = t.manifestoStat3;
+  setText('txtManifestoTag', t.manifestoTag);
+  setText('txtManifestoTitle', t.manifestoTitle);
+  setText('txtManifestoP1', t.manifestoP1);
+  setText('txtManifestoP2', t.manifestoP2);
+  setText('txtMStat1', t.manifestoStat1);
+  setText('txtMStat2', t.manifestoStat2);
+  setText('txtMStat3', t.manifestoStat3);
 
   // Home Spotlight & How it works
-  document.getElementById('txtSpotlightTag').textContent = t.spotlightTag;
-  document.getElementById('txtSpotlightTitle').textContent = t.spotlightTitle;
-  document.getElementById('txtSpotlightCta').textContent = t.spotlightCta;
-  document.getElementById('txtHowTitle').textContent = t.howTitle;
-  document.getElementById('txtStep1Title').textContent = t.step1Title;
-  document.getElementById('txtStep1Desc').textContent = t.step1Desc;
-  document.getElementById('txtStep2Title').textContent = t.step2Title;
-  document.getElementById('txtStep2Desc').textContent = t.step2Desc;
-  document.getElementById('txtStep3Title').textContent = t.step3Title;
-  document.getElementById('txtStep3Desc').textContent = t.step3Desc;
+  setText('txtSpotlightTag', t.spotlightTag);
+  setText('txtSpotlightTitle', t.spotlightTitle);
+  setText('txtSpotlightCta', t.spotlightCta);
+  setText('txtHowTitle', t.howTitle);
+  setText('txtStep1Title', t.step1Title);
+  setText('txtStep1Desc', t.step1Desc);
+  setText('txtStep2Title', t.step2Title);
+  setText('txtStep2Desc', t.step2Desc);
+  setText('txtStep3Title', t.step3Title);
+  setText('txtStep3Desc', t.step3Desc);
 
   // Directory Header & Filters
-  document.getElementById('txtDirHeaderTitle').textContent = t.dirHeaderTitle;
-  document.getElementById('txtDirHeaderSub').textContent = t.dirHeaderSubtitle;
-  document.getElementById('btnCityAll').textContent = t.allCities;
-  if (document.getElementById('btnCityRussia')) document.getElementById('btnCityRussia').textContent = t.destRussia;
-  if (document.getElementById('btnCityJapan')) document.getElementById('btnCityJapan').textContent = t.destJapan;
-  if (document.getElementById('btnCityUae')) document.getElementById('btnCityUae').textContent = t.destUae;
-  if (document.getElementById('btnCityThai')) document.getElementById('btnCityThai').textContent = t.destThailand;
-  if (document.getElementById('btnCityBali')) document.getElementById('btnCityBali').textContent = t.destBali;
+  setText('txtDirHeaderTitle', t.dirHeaderTitle);
+  setText('txtDirHeaderSub', t.dirHeaderSubtitle);
+  setText('btnCityAll', t.allCities);
+  setText('btnCityRussia', t.destRussia);
+  setText('btnCityJapan', t.destJapan);
+  setText('btnCityUae', t.destUae);
+  setText('btnCityThai', t.destThailand);
+  setText('btnCityBali', t.destBali);
 
-  document.getElementById('tabCatAll').textContent = t.allDisciplines;
-  document.getElementById('tabCatClothing').textContent = t.catClothing;
-  document.getElementById('tabCatShoesBags').textContent = t.catShoesBags;
-  document.getElementById('tabCatVintage').textContent = t.catVintageArchive;
-  document.getElementById('tabCatJewelry').textContent = t.catJewelryAccs;
-  searchInput.placeholder = t.searchPlaceholder;
-  document.getElementById('chipStyleAll').textContent = t.allStyles;
-  document.getElementById('chipStyleRunway').textContent = t.styleRunway;
-  document.getElementById('chipStyleMinimal').textContent = t.styleMinimal;
-  document.getElementById('chipStyleSoviet').textContent = t.styleSoviet;
-  document.getElementById('chipStyleAvantgarde').textContent = t.styleAvantgarde;
-  document.getElementById('chipStyleStreetwear').textContent = t.styleStreetwear;
-  document.getElementById('txtViewSplit').textContent = t.splitView;
-  document.getElementById('txtViewGrid').textContent = t.gridView;
-  document.getElementById('txtViewMap').textContent = t.mapView;
+  setText('tabCatAll', t.allDisciplines);
+  setText('tabCatClothing', t.catClothing);
+  setText('tabCatShoesBags', t.catShoesBags);
+  setText('tabCatVintage', t.catVintageArchive);
+  setText('tabCatJewelry', t.catJewelryAccs);
+  if (searchInput) searchInput.placeholder = t.searchPlaceholder || 'Search by store, brand...';
+  setText('chipStyleAll', t.allStyles);
+  setText('chipStyleRunway', t.styleRunway);
+  setText('chipStyleMinimal', t.styleMinimal);
+  setText('chipStyleSoviet', t.styleSoviet);
+  setText('chipStyleAvantgarde', t.styleAvantgarde);
+  setText('chipStyleStreetwear', t.styleStreetwear);
+  setText('txtViewSplit', t.splitView);
+  setText('txtViewGrid', t.gridView);
+  setText('txtViewMap', t.mapView);
 
   // Modals text
-  document.getElementById('txtModalToursTitle').textContent = t.toursTitle;
-  document.getElementById('txtModalSurvivalTitle').textContent = t.survivalTitle;
-  document.getElementById('txtModalSubmitTitle').textContent = t.submitModalTitle;
-  document.getElementById('txtModalSubmitSub').textContent = t.submitModalSubtitle;
-  document.getElementById('lblStoreName').textContent = t.submitStoreName;
-  if (document.getElementById('lblStoreEmail')) document.getElementById('lblStoreEmail').textContent = t.submitEmail;
-  document.getElementById('lblStoreCity').textContent = t.submitCity;
-  document.getElementById('lblStoreAddress').textContent = t.submitAddress;
-  document.getElementById('lblStoreCategory').textContent = t.submitCategory;
-  document.getElementById('lblStorePrice').textContent = t.submitPrice;
-  document.getElementById('lblStoreDesc').textContent = t.submitDesc;
-  document.getElementById('lblStoreContact').textContent = t.submitContact;
-  document.getElementById('btnSubmitSend').textContent = t.submitSendBtn;
-  document.getElementById('txtModalFavTitle').textContent = t.navSaved;
+  setText('txtModalToursTitle', t.toursTitle);
+  setText('txtModalSurvivalTitle', t.survivalTitle);
+  setText('txtModalSubmitTitle', t.submitModalTitle);
+  setText('txtModalSubmitSub', t.submitModalSubtitle);
+  setText('lblStoreName', t.submitStoreName);
+  setText('lblStoreEmail', t.submitEmail);
+  setText('lblStoreCity', t.submitCity);
+  setText('lblStoreAddress', t.submitAddress);
+  setText('lblStoreCategory', t.submitCategory);
+  setText('lblStorePrice', t.submitPrice);
+  setText('lblStoreDesc', t.submitDesc);
+  setText('lblStoreContact', t.submitContact);
+  setText('btnSubmitSend', t.submitSendBtn);
+  setText('txtModalFavTitle', t.navSaved);
 
   // Footer text
-  document.getElementById('txtFooterAbout').textContent = t.footerAbout;
-  document.getElementById('txtFooterExpansion').textContent = t.footerExpansion;
-  document.getElementById('txtFooterPartners').textContent = t.footerPartners;
-  document.getElementById('txtFooterRights').textContent = t.footerRights;
-  if (document.getElementById('linkFooterJapan')) document.getElementById('linkFooterJapan').textContent = t.destJapan;
-  if (document.getElementById('linkFooterUae')) document.getElementById('linkFooterUae').textContent = t.destUae;
-  if (document.getElementById('linkFooterThai')) document.getElementById('linkFooterThai').textContent = t.destThailand;
-  if (document.getElementById('linkFooterBali')) document.getElementById('linkFooterBali').textContent = t.destBali;
+  setText('txtFooterAbout', t.footerAbout);
+  setText('txtFooterExpansion', t.footerExpansion);
+  setText('txtFooterPartners', t.footerPartners);
+  setText('txtFooterRights', t.footerRights);
+  setText('linkFooterJapan', t.destJapan);
+  setText('linkFooterUae', t.destUae);
+  setText('linkFooterThai', t.destThailand);
+  setText('linkFooterBali', t.destBali);
 
   // Re-render
-  renderSpotlight();
-  renderSpots();
-  renderWalkingTours();
-  renderSurvivalTips();
+  try { renderSpotlight(); } catch (e) {}
+  try { renderSpots(); } catch (e) {}
+  try { renderWalkingTours(); } catch (e) {}
+  try { renderSurvivalTips(); } catch (e) {}
 
   if (state.selectedSpotId) {
     openSpotDrawer(state.selectedSpotId);
@@ -407,7 +458,7 @@ function applyLanguage(lang) {
 function applyTheme(theme) {
   state.theme = theme;
   document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem('cherevichka_theme', theme);
+  safeStorage.set('cherevichka_theme', theme);
 
   if (map) {
     updateMapTiles();
@@ -837,7 +888,7 @@ function toggleFavorite(spotId) {
     showToast('Saved to your wardrobe itinerary!');
   }
 
-  localStorage.setItem('cherevichka_favs', JSON.stringify([...state.favorites]));
+  safeStorage.set('cherevichka_favs', [...state.favorites]);
   updateFavoritesBadge();
   renderSpots();
   renderSpotlight();
@@ -1251,9 +1302,9 @@ function setupEventListeners() {
       status: 'pending'
     };
 
-    const existingLeads = JSON.parse(localStorage.getItem('cherevichka_inbound_leads') || '[]');
+    const existingLeads = safeStorage.getJSON('cherevichka_inbound_leads', []);
     existingLeads.unshift(newLead);
-    localStorage.setItem('cherevichka_inbound_leads', JSON.stringify(existingLeads));
+    safeStorage.set('cherevichka_inbound_leads', existingLeads);
 
     const allI18n = getI18N();
     const t = allI18n[state.lang] || allI18n.en;
