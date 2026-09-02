@@ -76,10 +76,10 @@ const state = {
       subtitleColor: '#E5DFC9'
     },
     pillars: {
-      clothingImg: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=800&q=80',
-      shoesImg: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=800&q=80',
-      vintageImg: 'https://images.unsplash.com/photo-1520006403909-838d6b92c22e?auto=format&fit=crop&w=800&q=80',
-      jewelryImg: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80'
+      clothingImg: 'assets/images/e213de95-ef12-45a0-a0da-362a0f43265f.webp',
+      shoesImg: 'assets/images/4d6497c6-bdbf-4d74-864a-ca4b68dfbf7f.webp',
+      vintageImg: 'assets/images/ac16aa4c-ae90-4511-81ec-27020e10e49c.webp',
+      jewelryImg: 'assets/images/33718ecc-4a03-4871-b1cd-422e7e49b25a.webp'
     },
     manifesto: {
       bgImage: '',

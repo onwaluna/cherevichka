@@ -112,6 +112,16 @@ function applyCustomDesignPanels() {
       if (imgShoes && p.shoesImg) imgShoes.src = p.shoesImg;
       if (imgVintage && p.vintageImg) imgVintage.src = p.vintageImg;
       if (imgJewelry && p.jewelryImg) imgJewelry.src = p.jewelryImg;
+    } else {
+      const imgClothing = document.getElementById('imgPillarClothing');
+      const imgShoes = document.getElementById('imgPillarShoes');
+      const imgVintage = document.getElementById('imgPillarVintage');
+      const imgJewelry = document.getElementById('imgPillarJewelry');
+
+      if (imgClothing) imgClothing.src = 'assets/images/e213de95-ef12-45a0-a0da-362a0f43265f.webp';
+      if (imgShoes) imgShoes.src = 'assets/images/4d6497c6-bdbf-4d74-864a-ca4b68dfbf7f.webp';
+      if (imgVintage) imgVintage.src = 'assets/images/ac16aa4c-ae90-4511-81ec-27020e10e49c.webp';
+      if (imgJewelry) imgJewelry.src = 'assets/images/33718ecc-4a03-4871-b1cd-422e7e49b25a.webp';
     }
 
     // 3. Manifesto background & overlay
