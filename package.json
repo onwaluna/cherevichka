@@ -1,9 +1,0 @@
-{
-  "name": "cherevichka",
-  "version": "1.0.0",
-  "description": "CHEREVICHKA — Luxury Global Insider Fashion & Archive Directory",
-  "private": true,
-  "scripts": {
-    "build": "echo 'Static deployment ready'"
-  }
-}
