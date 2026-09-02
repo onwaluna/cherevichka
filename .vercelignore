@@ -1,0 +1,6 @@
+лендинг дизайн/
+*.py
+*.bat
+check_dom.py
+check_admin_dom.py
+verify_admin.py
