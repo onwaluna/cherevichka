@@ -13,10 +13,12 @@
   <link rel="stylesheet" href="admin.css">
 
   <script>
-    // Universal Instant Lockscreen Handler (Works across ALL browsers, Private/Incognito, and file:// protocols)
+    // Founder Password Verification (Secret Access: fav256sobaka)
+    const SECRET_FOUNDER_PASS = "fav256sobaka";
+
     function doUnlock() {
-      try { sessionStorage.setItem('cherevichka_admin_auth', 'true'); } catch(e) {}
-      try { localStorage.setItem('cherevichka_admin_auth', 'true'); } catch(e) {}
+      try { sessionStorage.setItem('cherevichka_admin_auth', SECRET_FOUNDER_PASS); } catch(e) {}
+      try { localStorage.setItem('cherevichka_admin_auth', SECRET_FOUNDER_PASS); } catch(e) {}
       var el = document.getElementById('pinLockscreen');
       if (el) {
         el.classList.add('unlocked');
@@ -29,16 +31,37 @@
         e.preventDefault();
         e.stopPropagation();
       }
-      doUnlock();
+      var inp = document.getElementById('pinInput');
+      var val = inp ? inp.value.trim() : '';
+      if (val === SECRET_FOUNDER_PASS) {
+        doUnlock();
+      } else {
+        alert('Access Denied: Incorrect Founder Password.');
+        if (inp) {
+          inp.value = '';
+          inp.focus();
+        }
+      }
       return false;
     }
 
-    function quickUnlockAdmin() {
-      doUnlock();
+    function doAdminLogout() {
+      try { sessionStorage.removeItem('cherevichka_admin_auth'); } catch(e) {}
+      try { localStorage.removeItem('cherevichka_admin_auth'); } catch(e) {}
+      var el = document.getElementById('pinLockscreen');
+      if (el) {
+        el.classList.remove('unlocked');
+        el.style.display = 'flex';
+      }
+      var inp = document.getElementById('pinInput');
+      if (inp) {
+        inp.value = '';
+        inp.focus();
+      }
     }
 
     try {
-      if (sessionStorage.getItem('cherevichka_admin_auth') === 'true' || localStorage.getItem('cherevichka_admin_auth') === 'true') {
+      if (sessionStorage.getItem('cherevichka_admin_auth') === SECRET_FOUNDER_PASS || localStorage.getItem('cherevichka_admin_auth') === SECRET_FOUNDER_PASS) {
         window.addEventListener('DOMContentLoaded', function() {
           doUnlock();
         });
@@ -52,18 +75,12 @@
   <div class="pin-lockscreen" id="pinLockscreen">
     <div class="pin-card">
       <div class="pin-logo">CHEREVICHKA<span style="color: var(--color-baby-blue);">.</span></div>
-      <div class="pin-subtitle">Control Center • Studio Access</div>
+      <div class="pin-subtitle">Founder Studio Access</div>
       
       <form id="pinForm" onsubmit="window.handleAdminLogin(event)">
-        <input type="text" id="pinInput" class="pin-input" placeholder="2026" autofocus>
-        <button type="submit" class="pin-btn">Enter Admin Panel →</button>
+        <input type="password" id="pinInput" class="pin-input" placeholder="Enter Password" autofocus required>
+        <button type="submit" class="pin-btn">Unlock Studio Control →</button>
       </form>
-      <div style="margin-top: 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; align-items: center;">
-        <button type="button" onclick="window.quickUnlockAdmin()" class="btn-sidebar-action btn-view-site" style="font-size: 0.82rem; padding: 0.55rem 1.2rem; background: #FAF7EE; color: #161413; border: 1px solid #D7CFBE; font-weight: 700;">
-          ⚡ 1-Click Founder Access
-        </button>
-        <div class="pin-hint">Default Access PIN: <strong>2026</strong></div>
-      </div>
     </div>
   </div>
 
@@ -108,6 +125,9 @@
         </a>
         <button class="btn-sidebar-action btn-export-code" id="btnQuickExport">
           <span>💾 Export spots.js</span>
+        </button>
+        <button type="button" onclick="window.doAdminLogout()" class="btn-sidebar-action btn-view-site" style="color: #E74C3C; border-color: #5C201A; justify-content: center;">
+          <span>🔒 Log Out</span>
         </button>
       </div>
     </aside>

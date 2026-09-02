@@ -1,5 +1,7 @@
 import { I18N as DEFAULT_I18N, SPOTS_DATA as DEFAULT_SPOTS, WALKING_TOURS, COUNTRY_SURVIVAL_GUIDES } from './data/spots.js';
 
+const SECRET_FOUNDER_PASS = "fav256sobaka";
+
 /* ==========================================================================
    SAFE PROTOCOL-AGNOSTIC & PRIVATE-MODE STORAGE ADAPTER
    ========================================================================== */
@@ -44,7 +46,7 @@ const safeStorage = {
    ========================================================================== */
 
 const state = {
-  unlocked: safeStorage.get('cherevichka_admin_auth') === 'true',
+  unlocked: safeStorage.get('cherevichka_admin_auth') === SECRET_FOUNDER_PASS,
   activeSection: 'secSpots',
   editorLang: 'en',      // 'en' | 'ru' | 'zh'
   textLang: 'en',        // 'en' | 'ru' | 'zh'
@@ -141,32 +143,48 @@ function checkAuth() {
 
 function unlockAdmin() {
   state.unlocked = true;
-  sessionStorage.setItem('cherevichka_admin_auth', 'true');
-  localStorage.setItem('cherevichka_admin_auth', 'true');
+  safeStorage.set('cherevichka_admin_auth', SECRET_FOUNDER_PASS);
   const lockscreen = document.getElementById('pinLockscreen');
   if (lockscreen) {
     lockscreen.classList.add('unlocked');
     lockscreen.style.display = 'none';
   }
-  showToast('Welcome to Cherevichka Control Center!');
+  showToast('Welcome Founder! Studio Access Unlocked.');
 }
 
 function handleAdminLogin(e) {
   if (e) e.preventDefault();
   const inp = document.getElementById('pinInput');
   const val = inp ? inp.value.trim() : '';
-  if (val === '2026' || val === 'admin' || val.length >= 0) {
+  if (val === SECRET_FOUNDER_PASS) {
     unlockAdmin();
+  } else {
+    alert('Access Denied: Incorrect Founder Password.');
+    if (inp) {
+      inp.value = '';
+      inp.focus();
+    }
   }
 }
 
-function quickUnlockAdmin() {
-  unlockAdmin();
+function doAdminLogout() {
+  state.unlocked = false;
+  safeStorage.remove('cherevichka_admin_auth');
+  const lockscreen = document.getElementById('pinLockscreen');
+  if (lockscreen) {
+    lockscreen.classList.remove('unlocked');
+    lockscreen.style.display = 'flex';
+  }
+  const inp = document.getElementById('pinInput');
+  if (inp) {
+    inp.value = '';
+    inp.focus();
+  }
 }
 
 window.handleAdminLogin = handleAdminLogin;
-window.quickUnlockAdmin = quickUnlockAdmin;
 window.unlockAdmin = unlockAdmin;
+window.doAdminLogout = doAdminLogout;
 
 /* ==========================================================================
    DASHBOARD & SPOTS TABLE
