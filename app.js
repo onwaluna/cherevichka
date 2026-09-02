@@ -497,83 +497,96 @@ function toggleTheme() {
    ========================================================================== */
 
 function initMap() {
-  const mapElem = document.getElementById('leafletMap');
-  if (!mapElem) return;
+  if (typeof L === 'undefined') return;
+  try {
+    const mapElem = document.getElementById('leafletMap');
+    if (!mapElem) return;
 
-  const defaultCenter = [22.0, 85.0]; // Global Asia & Middle East Hub View
-  map = L.map('leafletMap', {
-    zoomControl: true,
-    scrollWheelZoom: true
-  }).setView(defaultCenter, 3);
+    const defaultCenter = [22.0, 85.0]; // Global Asia & Middle East Hub View
+    map = L.map('leafletMap', {
+      zoomControl: true,
+      scrollWheelZoom: true
+    }).setView(defaultCenter, 3);
 
-  markersLayer = L.layerGroup().addTo(map);
-  updateMapTiles();
+    markersLayer = L.layerGroup().addTo(map);
+    updateMapTiles();
+  } catch (e) {
+    console.warn('Leaflet map init skipped/failed:', e);
+  }
 }
 
 function updateMapTiles() {
-  if (!map) return;
-  if (currentTileLayer) {
-    map.removeLayer(currentTileLayer);
-  }
+  if (typeof L === 'undefined' || !map) return;
+  try {
+    if (currentTileLayer) {
+      map.removeLayer(currentTileLayer);
+    }
 
-  currentTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap',
-    maxZoom: 19,
-    subdomains: 'abcd'
-  }).addTo(map);
+    currentTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap',
+      maxZoom: 19,
+      subdomains: 'abcd'
+    }).addTo(map);
+  } catch (e) {
+    console.warn('Leaflet tiles skipped:', e);
+  }
 }
 
 function renderMapMarkers(spots) {
-  if (!markersLayer || !map) return;
-  markersLayer.clearLayers();
+  if (typeof L === 'undefined' || !markersLayer || !map) return;
+  try {
+    markersLayer.clearLayers();
 
-  if (spots.length === 0) return;
+    if (!spots || spots.length === 0) return;
 
-  const latLngs = [];
+    const latLngs = [];
 
-  spots.forEach((spot, index) => {
-    const coords = spot.coordinates;
-    latLngs.push(coords);
+    spots.forEach((spot, index) => {
+      const coords = spot.coordinates;
+      latLngs.push(coords);
 
-    const isSelected = state.selectedSpotId === spot.id;
+      const isSelected = state.selectedSpotId === spot.id;
 
-    const customIcon = L.divIcon({
-      className: 'custom-pin-wrapper',
-      html: `
-        <div class="custom-map-pin ${isSelected ? 'active-pin' : ''}" data-id="${spot.id}">
-          <span>${index + 1}</span>
+      const customIcon = L.divIcon({
+        className: 'custom-pin-wrapper',
+        html: `
+          <div class="custom-map-pin ${isSelected ? 'active-pin' : ''}" data-id="${spot.id}">
+            <span>${index + 1}</span>
+          </div>
+        `,
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -30]
+      });
+
+      const marker = L.marker(coords, { icon: customIcon });
+      const districtName = typeof spot.district === 'object' ? (spot.district[state.lang] || spot.district.en) : spot.district;
+
+      const popupContent = `
+        <div class="map-popup-card" onclick="window.openSpotDrawer('${spot.id}')">
+          <img src="${spot.images[0]}" alt="${spot.name}" class="map-popup-img">
+          <div class="map-popup-info">
+            <div class="map-popup-title">${spot.name}</div>
+            <div class="map-popup-meta">${districtName} • ${spot.priceRange}</div>
+          </div>
         </div>
-      `,
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -30]
+      `;
+
+      marker.bindPopup(popupContent);
+      marker.on('click', () => {
+        openSpotDrawer(spot.id);
+      });
+
+      markersLayer.addLayer(marker);
     });
 
-    const marker = L.marker(coords, { icon: customIcon });
-    const districtName = typeof spot.district === 'object' ? (spot.district[state.lang] || spot.district.en) : spot.district;
-
-    const popupContent = `
-      <div class="map-popup-card" onclick="window.openSpotDrawer('${spot.id}')">
-        <img src="${spot.images[0]}" alt="${spot.name}" class="map-popup-img">
-        <div class="map-popup-info">
-          <div class="map-popup-title">${spot.name}</div>
-          <div class="map-popup-meta">${districtName} • ${spot.priceRange}</div>
-        </div>
-      </div>
-    `;
-
-    marker.bindPopup(popupContent);
-    marker.on('click', () => {
-      openSpotDrawer(spot.id);
-    });
-
-    markersLayer.addLayer(marker);
-  });
-
-  if (latLngs.length > 1) {
-    map.fitBounds(latLngs, { padding: [40, 40], maxZoom: 14 });
-  } else if (latLngs.length === 1) {
-    map.setView(latLngs[0], 14);
+    if (latLngs.length > 1) {
+      map.fitBounds(latLngs, { padding: [40, 40], maxZoom: 14 });
+    } else if (latLngs.length === 1) {
+      map.setView(latLngs[0], 14);
+    }
+  } catch (e) {
+    console.warn('Render map markers failed gracefully:', e);
   }
 }
 
@@ -594,7 +607,7 @@ function renderSpotlight() {
     const isFav = state.favorites.has(spot.id);
 
     return `
-      <article class="spot-card" onclick="window.openSpotDrawer('${spot.id}')">
+      <article class="spot-card" data-id="${spot.id}" onclick="window.openSpotDrawer('${spot.id}')">
         <div class="card-media-wrap">
           <img src="${spot.images[0]}" alt="${spot.name}" class="card-img" loading="lazy">
           <div class="card-top-badges">
@@ -658,9 +671,7 @@ function renderSpots() {
   const t = allI18n[state.lang] || allI18n.en;
 
   const countLabel = filtered.length === 1 ? t.location : t.locations;
-  resultsCountText.innerHTML = `${t.showing} <strong>${filtered.length}</strong> ${countLabel}`;
-
-  renderMapMarkers(filtered);
+  if (resultsCountText) resultsCountText.innerHTML = `${t.showing} <strong>${filtered.length}</strong> ${countLabel}`;
 
   if (filtered.length === 0) {
     spotsGrid.innerHTML = `
@@ -672,6 +683,7 @@ function renderSpots() {
         </button>
       </div>
     `;
+    try { renderMapMarkers(filtered); } catch (e) {}
     return;
   }
 
@@ -727,31 +739,32 @@ function renderSpots() {
 
           <div>
             <h3 class="card-title">${spot.name}</h3>
-            <div class="card-cyrillic">${spot.cyrillicName}</div>
+            ${spot.cyrillicName ? `<div style="font-size: 0.8rem; color: var(--text-muted);">${spot.cyrillicName}</div>` : ''}
           </div>
 
           <p class="card-curator-snippet">${curatorNote}</p>
 
           ${touristPerk ? `
             <div class="card-perk-badge">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>${touristPerk}</span>
+              <span>🎁</span>
+              <span><strong>Perk:</strong> ${touristPerk}</span>
             </div>
           ` : ''}
 
           <div class="card-footer">
-            <span class="how-to-find-preview" title="${howToFind}">
-              🔑 ${howToFind}
-            </span>
-            <button class="quick-copy-taxi-btn" onclick="event.stopPropagation(); window.copyTaxiAddress('${spot.cyrillicAddress}')" title="${t.taxiPrompt}">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-              <span>${t.taxiBtn}</span>
-            </button>
+            <span class="card-address-hint">📍 ${spot.address.split(',')[0]}</span>
+            <span class="card-details-cta">Insider Dossier →</span>
           </div>
         </div>
       </article>
     `;
   }).join('');
+
+  try {
+    renderMapMarkers(filtered);
+  } catch (e) {
+    console.warn('renderMapMarkers skipped:', e);
+  }
 }
 
 /* ==========================================================================
@@ -1157,7 +1170,7 @@ function setupEventListeners() {
   navTabDirectory?.addEventListener('click', () => navigateTo('directory'));
   document.getElementById('navTabTours')?.addEventListener('click', () => openModal('toursModal'));
 
-  // Survival Guide modal openers
+  // Survival Guide modal opener
   const openSurvivalGuideHandler = () => {
     if (state.city !== 'all' && COUNTRY_SURVIVAL_GUIDES[state.city]) {
       state.survivalCountry = state.city;
@@ -1166,7 +1179,6 @@ function setupEventListeners() {
     openModal('survivalModal');
   };
 
-  document.getElementById('openSurvivalBtn')?.addEventListener('click', openSurvivalGuideHandler);
   document.getElementById('navTabSurvival')?.addEventListener('click', openSurvivalGuideHandler);
 
   // Survival modal country switcher tabs

@@ -231,10 +231,6 @@ input, textarea, select {
   box-shadow: var(--shadow-sm);
 }
 
-@media (max-width: 768px) {
-  .main-nav { display: none; }
-}
-
 /* Prominent Trilingual Switcher */
 .lang-switcher {
   display: flex;
@@ -2165,13 +2161,13 @@ input, textarea, select {
   }
 
   .header-inner {
-    padding: 0.5rem 0.75rem;
+    padding: 0.5rem 0.75rem 0.35rem;
     gap: 0.35rem;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
   }
@@ -2193,6 +2189,28 @@ input, textarea, select {
     flex-wrap: nowrap;
     align-items: center;
     gap: 0.25rem;
+    flex-shrink: 0;
+  }
+
+  .main-nav {
+    display: flex;
+    width: 100%;
+    order: 3;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 0.35rem 0 0.1rem;
+    margin-top: 0.15rem;
+    border-top: 1px solid var(--border-subtle);
+    gap: 0.35rem;
+    justify-content: flex-start;
+  }
+  .main-nav::-webkit-scrollbar { display: none; }
+
+  .nav-tab-btn {
+    font-size: 0.74rem;
+    padding: 0.28rem 0.65rem;
+    white-space: nowrap;
     flex-shrink: 0;
   }
 

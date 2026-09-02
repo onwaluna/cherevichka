@@ -980,10 +980,6 @@ function setupPillarUploader(fileId, urlInputId, thumbId, stateKey) {
     }
   });
 }
-      safeStorage.set('cherevichka_design_panels', state.designPanels);
-    }
-  });
-}
 
 /* ==========================================================================
    COLOR PALETTE CUSTOMIZER
