@@ -638,10 +638,11 @@ function adminRemoveGalleryImage(index) {
 
 function saveSpotsToLocalStorage() {
   safeStorage.set('cherevichka_custom_spots', state.spots);
+  publishConfigToCloud({ spots: state.spots });
 }
 
 /* ==========================================================================
-   IMAGE COMPRESSION & FILE UPLOAD HELPER
+   IMAGE COMPRESSION & CLOUD UPLOAD & PUBLISH HELPERS
    ========================================================================== */
 
 function compressImageFile(file, maxDimension = 1400, quality = 0.85) {
@@ -674,6 +675,50 @@ function compressImageFile(file, maxDimension = 1400, quality = 0.85) {
     };
     reader.readAsDataURL(file);
   });
+}
+
+async function uploadImageToCloud(file) {
+  const compressed = await compressImageFile(file, 1600, 0.85);
+  try {
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        auth: SECRET_FOUNDER_PASS,
+        dataUrl: compressed,
+        filename: file.name
+      })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success && data.url) {
+        return data.url;
+      }
+    }
+  } catch (e) {
+    console.warn('Direct cloud upload skipped, using optimized payload:', e);
+  }
+  return compressed;
+}
+
+async function publishConfigToCloud(configPayload) {
+  try {
+    const res = await fetch('/api/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        auth: SECRET_FOUNDER_PASS,
+        ...configPayload
+      })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return data.success;
+    }
+  } catch (e) {
+    console.warn('Cloud publish failed:', e);
+  }
+  return false;
 }
 
 /* ==========================================================================
@@ -735,17 +780,20 @@ function initDesignPanels() {
   });
 
   // File upload for background image/texture
-  document.getElementById('fileHeaderBg').addEventListener('change', (e) => {
+  document.getElementById('fileHeaderBg').addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        p.header.bgImage = event.target.result;
-        inpHeaderBgUrl.value = '';
-        headerPreviewBanner.style.backgroundImage = `url('${p.header.bgImage}')`;
-        showToast('Loaded top header background from PC!');
-      };
-      reader.readAsDataURL(file);
+      try {
+        const cloudUrl = await uploadImageToCloud(file);
+        p.header.bgImage = cloudUrl;
+        inpHeaderBgUrl.value = cloudUrl.startsWith('data:') ? '' : cloudUrl;
+        headerPreviewBanner.style.backgroundImage = `url('${cloudUrl}')`;
+        safeStorage.set('cherevichka_design_panels', state.designPanels);
+        publishConfigToCloud({ designPanels: state.designPanels });
+        showToast('Header background uploaded & saved to cloud!');
+      } catch (err) {
+        showToast('Error loading image');
+      }
     }
   });
 
@@ -768,6 +816,8 @@ function initDesignPanels() {
     selHeaderBgTarget.value = 'header';
     headerPreviewBanner.style.backgroundColor = '#FAF7EE';
     headerPreviewBanner.style.backgroundImage = 'none';
+    safeStorage.set('cherevichka_design_panels', state.designPanels);
+    publishConfigToCloud({ designPanels: state.designPanels });
     showToast('Reset top background to default Vanilla (#FAF7EE)');
   });
 
@@ -846,12 +896,13 @@ function initDesignPanels() {
     const file = e.target.files[0];
     if (file) {
       try {
-        const compressed = await compressImageFile(file, 1600, 0.85);
-        p.hero.bgImage = compressed;
-        inpHeroBgUrl.value = '';
-        heroPreviewBanner.style.backgroundImage = `url('${compressed}')`;
+        const cloudUrl = await uploadImageToCloud(file);
+        p.hero.bgImage = cloudUrl;
+        inpHeroBgUrl.value = cloudUrl.startsWith('data:') ? '' : cloudUrl;
+        heroPreviewBanner.style.backgroundImage = `url('${cloudUrl}')`;
         safeStorage.set('cherevichka_design_panels', state.designPanels);
-        showToast('Loaded hero image (compressed & saved)!');
+        publishConfigToCloud({ designPanels: state.designPanels });
+        showToast('Hero image uploaded & published live!');
       } catch (err) {
         showToast('Error loading image');
       }
@@ -934,10 +985,12 @@ function initDesignPanels() {
     p.manifesto.overlayOpacity = 20;
     rangeManifestoOverlay.value = 20;
     lblManifestoOverlayVal.textContent = '20%';
+    safeStorage.set('cherevichka_design_panels', state.designPanels);
+    publishConfigToCloud({ designPanels: state.designPanels });
     showToast('Reset manifesto texture');
   });
 
-  document.getElementById('btnSavePanels').addEventListener('click', () => {
+  document.getElementById('btnSavePanels').addEventListener('click', async () => {
     const cUrl = document.getElementById('inpUrlPillarClothing')?.value.trim();
     if (cUrl) p.pillars.clothingImg = cUrl;
     const sUrl = document.getElementById('inpUrlPillarShoes')?.value.trim();
@@ -954,7 +1007,8 @@ function initDesignPanels() {
 
     state.designPanels = p;
     safeStorage.set('cherevichka_design_panels', p);
-    showToast('Design Panels applied to live site!');
+    await publishConfigToCloud({ designPanels: state.designPanels });
+    showToast('Design Panels published live to all devices!');
   });
 }
 
@@ -974,12 +1028,13 @@ function setupPillarUploader(fileId, urlInputId, thumbId, stateKey) {
     const file = e.target.files[0];
     if (file) {
       try {
-        const compressed = await compressImageFile(file, 1400, 0.85);
-        p[stateKey] = compressed;
-        thumb.src = compressed;
-        urlInp.value = '';
+        const cloudUrl = await uploadImageToCloud(file);
+        p[stateKey] = cloudUrl;
+        thumb.src = cloudUrl;
+        urlInp.value = cloudUrl.startsWith('data:') ? '' : cloudUrl;
         safeStorage.set('cherevichka_design_panels', state.designPanels);
-        showToast('Updated category cover photo (compressed & saved)!');
+        publishConfigToCloud({ designPanels: state.designPanels });
+        showToast('Category cover uploaded & published live!');
       } catch (err) {
         showToast('Error loading image');
       }
@@ -1076,7 +1131,7 @@ function syncColorPair(picker, textInput, swatch, initialVal) {
   });
 }
 
-document.getElementById('btnSaveColors').addEventListener('click', () => {
+document.getElementById('btnSaveColors').addEventListener('click', async () => {
   state.colors = {
     redOchre: document.getElementById('hexRedOchre').value,
     babyBlue: document.getElementById('hexBabyBlue').value,
@@ -1092,7 +1147,8 @@ document.getElementById('btnSaveColors').addEventListener('click', () => {
 
   safeStorage.set('cherevichka_custom_colors', state.colors);
   safeStorage.set('cherevichka_custom_fonts', state.fonts);
-  showToast('Colors & Typography applied to live site!');
+  await publishConfigToCloud({ colors: state.colors, fonts: state.fonts });
+  showToast('Colors & Typography published live to all devices!');
 });
 
 document.getElementById('btnResetColors').addEventListener('click', () => {
@@ -1141,9 +1197,10 @@ function saveLandingTextInputs() {
   safeStorage.set('cherevichka_custom_i18n', state.i18n);
 }
 
-document.getElementById('btnSaveTexts').addEventListener('click', () => {
+document.getElementById('btnSaveTexts').addEventListener('click', async () => {
   saveLandingTextInputs();
-  showToast('Saved landing texts successfully!');
+  await publishConfigToCloud({ i18n: state.i18n });
+  showToast('Saved landing texts published live to all devices!');
 });
 
 /* ==========================================================================

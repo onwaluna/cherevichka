@@ -42,10 +42,42 @@ const safeStorage = {
 };
 
 /* ==========================================================================
-   DYNAMIC DATA ADAPTER (READS FROM ADMIN EDITS OR DEFAULTS)
+   DYNAMIC DATA & CLOUD SYNC ADAPTER (CENTRALIZED LIVE SOURCE OF TRUTH)
    ========================================================================== */
 
+let cloudConfig = null;
+
+async function initCloudSync() {
+  try {
+    const res = await fetch('/api/config', { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success && data.config) {
+        cloudConfig = data.config;
+        if (cloudConfig.designPanels) {
+          applyCustomDesignPanels(cloudConfig.designPanels);
+        }
+        if (cloudConfig.colors) {
+          applyCustomColors(cloudConfig.colors);
+        }
+        if (cloudConfig.fonts) {
+          applyCustomFonts(cloudConfig.fonts);
+        }
+        if (cloudConfig.spots && Array.isArray(cloudConfig.spots) && cloudConfig.spots.length > 0) {
+          renderSpots();
+          renderSpotlight();
+        }
+      }
+    }
+  } catch (e) {
+    // Graceful offline fallback to BASE_SPOTS and BASE_PANELS
+  }
+}
+
 function getSpots() {
+  if (cloudConfig && Array.isArray(cloudConfig.spots) && cloudConfig.spots.length > 0) {
+    return cloudConfig.spots;
+  }
   const custom = safeStorage.getJSON('cherevichka_custom_spots', null);
   if (custom && Array.isArray(custom) && custom.length > 0) {
     return custom;
@@ -54,13 +86,14 @@ function getSpots() {
 }
 
 function getI18N() {
+  if (cloudConfig && cloudConfig.i18n) return cloudConfig.i18n;
   const custom = safeStorage.getJSON('cherevichka_custom_i18n', null);
   if (custom) return custom;
   return BASE_I18N;
 }
 
-function applyCustomColors() {
-  const colors = safeStorage.getJSON('cherevichka_custom_colors', BASE_COLORS);
+function applyCustomColors(overrideColors) {
+  const colors = overrideColors || (cloudConfig && cloudConfig.colors) || safeStorage.getJSON('cherevichka_custom_colors', BASE_COLORS);
   if (colors) {
     if (colors.redOchre) document.documentElement.style.setProperty('--color-red-ochre', colors.redOchre);
     if (colors.babyBlue) document.documentElement.style.setProperty('--color-baby-blue', colors.babyBlue);
@@ -70,16 +103,16 @@ function applyCustomColors() {
   }
 }
 
-function applyCustomFonts() {
-  const fonts = safeStorage.getJSON('cherevichka_custom_fonts', BASE_FONTS);
+function applyCustomFonts(overrideFonts) {
+  const fonts = overrideFonts || (cloudConfig && cloudConfig.fonts) || safeStorage.getJSON('cherevichka_custom_fonts', BASE_FONTS);
   if (fonts) {
     if (fonts.headerFont) document.documentElement.style.setProperty('--font-serif', fonts.headerFont);
     if (fonts.bodyFont) document.documentElement.style.setProperty('--font-sans', fonts.bodyFont);
   }
 }
 
-function applyCustomDesignPanels() {
-  const panels = safeStorage.getJSON('cherevichka_design_panels', BASE_PANELS);
+function applyCustomDesignPanels(overridePanels) {
+  const panels = overridePanels || (cloudConfig && cloudConfig.designPanels) || safeStorage.getJSON('cherevichka_design_panels', BASE_PANELS);
   if (!panels) return;
   try {
     // 0. Top Header Bar & Global Background Layer (Color Fill + Image)
@@ -245,6 +278,9 @@ function initApp() {
   try { applyLanguage(state.lang); } catch (e) { console.error('applyLanguage error:', e); }
   try { updateFavoritesBadge(); } catch (e) { console.error('updateFavoritesBadge error:', e); }
   try { renderSpotlight(); } catch (e) { console.error('renderSpotlight error:', e); }
+
+  // Asynchronous Live Cloud Sync (Centralized DB without local storage isolation)
+  try { initCloudSync(); } catch (e) {}
 
   // Prada Header Scroll Effect
   try {
