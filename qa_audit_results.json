@@ -39,7 +39,7 @@
         {
           "test_name": "DOM ID Contract: admin.html vs admin.js",
           "status": "PASS",
-          "details": "All 101 IDs exist in admin.html",
+          "details": "All 105 IDs exist in admin.html",
           "error": "",
           "logs": []
         }

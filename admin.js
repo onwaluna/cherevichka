@@ -938,6 +938,21 @@ function initDesignPanels() {
   });
 
   document.getElementById('btnSavePanels').addEventListener('click', () => {
+    const cUrl = document.getElementById('inpUrlPillarClothing')?.value.trim();
+    if (cUrl) p.pillars.clothingImg = cUrl;
+    const sUrl = document.getElementById('inpUrlPillarShoes')?.value.trim();
+    if (sUrl) p.pillars.shoesImg = sUrl;
+    const vUrl = document.getElementById('inpUrlPillarVintage')?.value.trim();
+    if (vUrl) p.pillars.vintageImg = vUrl;
+    const jUrl = document.getElementById('inpUrlPillarJewelry')?.value.trim();
+    if (jUrl) p.pillars.jewelryImg = jUrl;
+
+    const heroUrl = document.getElementById('inpHeroBgUrl')?.value.trim();
+    if (heroUrl) p.hero.bgImage = heroUrl;
+    const manifestoUrl = document.getElementById('inpManifestoBgUrl')?.value.trim();
+    if (manifestoUrl) p.manifesto.bgImage = manifestoUrl;
+
+    state.designPanels = p;
     safeStorage.set('cherevichka_design_panels', p);
     showToast('Design Panels applied to live site!');
   });
@@ -971,13 +986,15 @@ function setupPillarUploader(fileId, urlInputId, thumbId, stateKey) {
     }
   });
 
-  urlInp.addEventListener('input', (e) => {
-    const val = e.target.value.trim();
-    if (val) {
-      p[stateKey] = val;
-      thumb.src = val;
-      safeStorage.set('cherevichka_design_panels', state.designPanels);
-    }
+  ['input', 'change', 'blur'].forEach(evt => {
+    urlInp.addEventListener(evt, (e) => {
+      const val = e.target.value.trim();
+      if (val) {
+        p[stateKey] = val;
+        thumb.src = val;
+        safeStorage.set('cherevichka_design_panels', state.designPanels);
+      }
+    });
   });
 }
 

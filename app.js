@@ -784,8 +784,16 @@ function openSpotDrawer(spotId) {
     card.classList.toggle('selected-active', card.dataset.id === spotId);
   });
 
-  if (map) {
-    map.flyTo(spot.coordinates, 15, { duration: 1.2 });
+  if (map && Array.isArray(spot.coordinates) && spot.coordinates.length === 2) {
+    try {
+      const lat = parseFloat(spot.coordinates[0]);
+      const lng = parseFloat(spot.coordinates[1]);
+      if (!isNaN(lat) && !isNaN(lng)) {
+        map.flyTo([lat, lng], 15, { duration: 1.2 });
+      }
+    } catch (e) {
+      console.warn('Map flyTo skipped:', e);
+    }
   }
 
   const districtName = typeof spot.district === 'object' ? (spot.district[state.lang] || spot.district.en) : spot.district;

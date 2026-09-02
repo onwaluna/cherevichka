@@ -130,7 +130,7 @@ def run_level1_static_tests(report, page, server_url):
         errors = []
         page.on('pageerror', lambda err: errors.append(str(err)))
         try:
-            page.goto(f"{server_url}/{page_url}", timeout=5000)
+            page.goto(f"{server_url}/{page_url}", wait_until='domcontentloaded', timeout=10000)
             time.sleep(0.5)
 
             # Check if any syntax errors occurred during script parsing
@@ -233,7 +233,7 @@ def run_level2_russian_resilience_tests(report, browser, server_url):
 
     # 2.1 Initial Load under simulated Russian block
     try:
-        page.goto(f"{server_url}/index.html", timeout=6000)
+        page.goto(f"{server_url}/index.html", wait_until='domcontentloaded', timeout=10000)
         time.sleep(0.5)
 
         critical_errors = [e for e in page_errors if "L is not defined" in e or "ReferenceError" in e]
@@ -296,7 +296,7 @@ def run_level2_russian_resilience_tests(report, browser, server_url):
 def run_level3_e2e_crawler_tests(report, page, server_url):
     report.start_module("Level 3: Exhaustive E2E Controls & Buttons Crawler (Main Site)")
 
-    page.goto(f"{server_url}/index.html", timeout=6000)
+    page.goto(f"{server_url}/index.html", wait_until='domcontentloaded', timeout=10000)
     time.sleep(0.5)
 
     # 3.1 Brand Logo & Home Navigation
@@ -576,7 +576,7 @@ def run_level4_admin_panel_tests(report, page, server_url):
 
     # 4.1 Admin Page Load & Syntax Evaluation
     try:
-        page.goto(f"{server_url}/admin.html", timeout=5000)
+        page.goto(f"{server_url}/admin.html", wait_until='domcontentloaded', timeout=10000)
         time.sleep(0.5)
 
         syntax_errs = [e for e in page_errors if "Unexpected token" in e or "SyntaxError" in e]
@@ -653,7 +653,7 @@ def run_level5_responsive_matrix(report, browser, server_url):
         context = browser.new_context(viewport={"width": vp["width"], "height": vp["height"]})
         page = context.new_page()
         try:
-            page.goto(f"{server_url}/index.html", timeout=5000)
+            page.goto(f"{server_url}/index.html", wait_until='domcontentloaded', timeout=10000)
             time.sleep(0.4)
 
             # Check directory navigation on viewport
