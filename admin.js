@@ -904,6 +904,7 @@ function setupPillarUploader(fileId, urlInputId, thumbId, stateKey) {
         p[stateKey] = event.target.result;
         thumb.src = event.target.result;
         urlInp.value = '';
+        safeStorage.set('cherevichka_design_panels', state.designPanels);
         showToast('Updated category cover photo!');
       };
       reader.readAsDataURL(file);
@@ -915,6 +916,7 @@ function setupPillarUploader(fileId, urlInputId, thumbId, stateKey) {
     if (val) {
       p[stateKey] = val;
       thumb.src = val;
+      safeStorage.set('cherevichka_design_panels', state.designPanels);
     }
   });
 }
