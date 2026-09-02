@@ -1074,7 +1074,7 @@ document.getElementById('btnSaveTexts').addEventListener('click', () => {
    ========================================================================== */
 
 function generateSpotsJsCode() {
-  return `export const I18N = ${JSON.stringify(state.i18n, null, 2)};\n\nexport const COUNTRY_SURVIVAL_GUIDES = ${JSON.stringify(COUNTRY_SURVIVAL_GUIDES, null, 2)};\n\nexport const SPOTS_DATA = ${JSON.stringify(state.spots, null, 2)};\n\nexport const WALKING_TOURS = ${JSON.stringify(WALKING_TOURS, null, 2)};\n\nexport const TOURIST_SURVIVAL_TIPS = COUNTRY_SURVIVAL_GUIDES;\n`;
+  return `export const I18N = ${JSON.stringify(state.i18n, null, 2)};\n\nexport const DESIGN_PANELS = ${JSON.stringify(state.designPanels, null, 2)};\n\nexport const CUSTOM_COLORS = ${JSON.stringify(state.colors, null, 2)};\n\nexport const CUSTOM_FONTS = ${JSON.stringify(state.fonts, null, 2)};\n\nexport const COUNTRY_SURVIVAL_GUIDES = ${JSON.stringify(COUNTRY_SURVIVAL_GUIDES, null, 2)};\n\nexport const SPOTS_DATA = ${JSON.stringify(state.spots, null, 2)};\n\nexport const WALKING_TOURS = ${JSON.stringify(WALKING_TOURS, null, 2)};\n\nexport const TOURIST_SURVIVAL_TIPS = COUNTRY_SURVIVAL_GUIDES;\n`;
 }
 
 function downloadSpotsFile() {

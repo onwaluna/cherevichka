@@ -1,4 +1,4 @@
-import { I18N as BASE_I18N, SPOTS_DATA as BASE_SPOTS, WALKING_TOURS, COUNTRY_SURVIVAL_GUIDES } from './data/spots.js';
+import { I18N as BASE_I18N, SPOTS_DATA as BASE_SPOTS, WALKING_TOURS, COUNTRY_SURVIVAL_GUIDES, DESIGN_PANELS as BASE_PANELS, CUSTOM_COLORS as BASE_COLORS, CUSTOM_FONTS as BASE_FONTS } from './data/spots.js';
 
 /* ==========================================================================
    DYNAMIC DATA ADAPTER (READS FROM LOCALSTORAGE IF ADMIN HAS EDITED)
@@ -7,7 +7,10 @@ import { I18N as BASE_I18N, SPOTS_DATA as BASE_SPOTS, WALKING_TOURS, COUNTRY_SUR
 function getSpots() {
   const custom = localStorage.getItem('cherevichka_custom_spots');
   if (custom) {
-    try { return JSON.parse(custom); } catch (e) {}
+    try { 
+      const parsed = JSON.parse(custom);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    } catch (e) {}
   }
   return BASE_SPOTS;
 }
@@ -22,35 +25,39 @@ function getI18N() {
 
 function applyCustomColors() {
   const custom = localStorage.getItem('cherevichka_custom_colors');
+  let colors = BASE_COLORS;
   if (custom) {
-    try {
-      const colors = JSON.parse(custom);
-      if (colors.redOchre) document.documentElement.style.setProperty('--color-red-ochre', colors.redOchre);
-      if (colors.babyBlue) document.documentElement.style.setProperty('--color-baby-blue', colors.babyBlue);
-      if (colors.bgPrimary) document.documentElement.style.setProperty('--bg-primary', colors.bgPrimary);
-      if (colors.textPrimary) document.documentElement.style.setProperty('--text-primary', colors.textPrimary);
-      if (colors.textSecondary) document.documentElement.style.setProperty('--text-secondary', colors.textSecondary);
-    } catch (e) {}
+    try { colors = JSON.parse(custom); } catch (e) {}
+  }
+  if (colors) {
+    if (colors.redOchre) document.documentElement.style.setProperty('--color-red-ochre', colors.redOchre);
+    if (colors.babyBlue) document.documentElement.style.setProperty('--color-baby-blue', colors.babyBlue);
+    if (colors.bgPrimary) document.documentElement.style.setProperty('--bg-primary', colors.bgPrimary);
+    if (colors.textPrimary) document.documentElement.style.setProperty('--text-primary', colors.textPrimary);
+    if (colors.textSecondary) document.documentElement.style.setProperty('--text-secondary', colors.textSecondary);
   }
 }
 
 function applyCustomFonts() {
   const custom = localStorage.getItem('cherevichka_custom_fonts');
+  let fonts = BASE_FONTS;
   if (custom) {
-    try {
-      const fonts = JSON.parse(custom);
-      if (fonts.headerFont) document.documentElement.style.setProperty('--font-serif', fonts.headerFont);
-      if (fonts.bodyFont) document.documentElement.style.setProperty('--font-sans', fonts.bodyFont);
-    } catch (e) {}
+    try { fonts = JSON.parse(custom); } catch (e) {}
+  }
+  if (fonts) {
+    if (fonts.headerFont) document.documentElement.style.setProperty('--font-serif', fonts.headerFont);
+    if (fonts.bodyFont) document.documentElement.style.setProperty('--font-sans', fonts.bodyFont);
   }
 }
 
 function applyCustomDesignPanels() {
   const custom = localStorage.getItem('cherevichka_design_panels');
-  if (!custom) return;
+  let panels = BASE_PANELS;
+  if (custom) {
+    try { panels = JSON.parse(custom); } catch (e) {}
+  }
+  if (!panels) return;
   try {
-    const panels = JSON.parse(custom);
-
     // 0. Top Header Bar & Global Background Layer (Color Fill + Image)
     const siteHeader = document.querySelector('.site-header');
     const globalBgLayer = document.getElementById('globalBgLayer');
@@ -81,19 +88,14 @@ function applyCustomDesignPanels() {
     if (heroSection && heroOverlay && panels.hero) {
       const h = panels.hero;
 
-      // Custom direct title & subtitle colors
-      if (txtHeroTitle && h.titleColor) {
-        txtHeroTitle.style.color = h.titleColor;
-      }
-      if (txtHeroSubtitle && h.subtitleColor) {
-        txtHeroSubtitle.style.color = h.subtitleColor;
-      }
+      if (txtHeroTitle && h.titleColor) txtHeroTitle.style.color = h.titleColor;
+      if (txtHeroSubtitle && h.subtitleColor) txtHeroSubtitle.style.color = h.subtitleColor;
 
       if (h.bgImage) {
         heroSection.style.backgroundImage = `url('${h.bgImage}')`;
         heroSection.style.backgroundSize = h.bgFit || 'cover';
         heroSection.style.backgroundRepeat = h.bgFit === 'repeat' ? 'repeat' : 'no-repeat';
-        heroOverlay.style.opacity = (h.overlayOpacity || 45) / 100;
+        heroOverlay.style.opacity = (h.overlayOpacity !== undefined ? h.overlayOpacity : 45) / 100;
       } else {
         heroSection.style.backgroundImage = '';
         heroOverlay.style.opacity = '0';
@@ -101,8 +103,8 @@ function applyCustomDesignPanels() {
     }
 
     // 2. Pillars covers
-    if (panels.pillars) {
-      const p = panels.pillars;
+    const p = panels.pillars || BASE_PANELS.pillars;
+    if (p) {
       const imgClothing = document.getElementById('imgPillarClothing');
       const imgShoes = document.getElementById('imgPillarShoes');
       const imgVintage = document.getElementById('imgPillarVintage');
@@ -112,16 +114,6 @@ function applyCustomDesignPanels() {
       if (imgShoes && p.shoesImg) imgShoes.src = p.shoesImg;
       if (imgVintage && p.vintageImg) imgVintage.src = p.vintageImg;
       if (imgJewelry && p.jewelryImg) imgJewelry.src = p.jewelryImg;
-    } else {
-      const imgClothing = document.getElementById('imgPillarClothing');
-      const imgShoes = document.getElementById('imgPillarShoes');
-      const imgVintage = document.getElementById('imgPillarVintage');
-      const imgJewelry = document.getElementById('imgPillarJewelry');
-
-      if (imgClothing) imgClothing.src = 'assets/images/e213de95-ef12-45a0-a0da-362a0f43265f.webp';
-      if (imgShoes) imgShoes.src = 'assets/images/4d6497c6-bdbf-4d74-864a-ca4b68dfbf7f.webp';
-      if (imgVintage) imgVintage.src = 'assets/images/ac16aa4c-ae90-4511-81ec-27020e10e49c.webp';
-      if (imgJewelry) imgJewelry.src = 'assets/images/33718ecc-4a03-4871-b1cd-422e7e49b25a.webp';
     }
 
     // 3. Manifesto background & overlay
@@ -130,13 +122,15 @@ function applyCustomDesignPanels() {
     if (manifestoSection && manifestoOverlay && panels.manifesto) {
       if (panels.manifesto.bgImage) {
         manifestoSection.style.backgroundImage = `url('${panels.manifesto.bgImage}')`;
-        manifestoOverlay.style.opacity = (panels.manifesto.overlayOpacity || 20) / 100;
+        manifestoOverlay.style.opacity = (panels.manifesto.overlayOpacity !== undefined ? panels.manifesto.overlayOpacity : 20) / 100;
       } else {
         manifestoSection.style.backgroundImage = '';
         manifestoOverlay.style.opacity = '0';
       }
     }
-  } catch (e) {}
+  } catch (e) {
+    console.error('Error in applyCustomDesignPanels:', e);
+  }
 }
 
 /* ==========================================================================

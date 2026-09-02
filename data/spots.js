@@ -1584,4 +1584,40 @@ export const WALKING_TOURS = [
   }
 ];
 
+export const DESIGN_PANELS = {
+  "header": {
+    "bgImage": "",
+    "target": "header"
+  },
+  "hero": {
+    "bgImage": "moodboard/cherevichka_master_artwork_enhanced.jpg",
+    "overlayOpacity": 45,
+    "titleColor": "#FFFFFF",
+    "subtitleColor": "#E5DFC9"
+  },
+  "pillars": {
+    "clothingImg": "assets/images/e213de95-ef12-45a0-a0da-362a0f43265f.webp",
+    "shoesImg": "assets/images/4d6497c6-bdbf-4d74-864a-ca4b68dfbf7f.webp",
+    "vintageImg": "assets/images/ac16aa4c-ae90-4511-81ec-27020e10e49c.webp",
+    "jewelryImg": "assets/images/33718ecc-4a03-4871-b1cd-422e7e49b25a.webp"
+  },
+  "manifesto": {
+    "bgImage": "moodboard/cherevichka_master_artwork_enhanced.jpg",
+    "overlayOpacity": 20
+  }
+};
+
+export const CUSTOM_COLORS = {
+  "redOchre": "#913731",
+  "babyBlue": "#B5C8D4",
+  "bgPrimary": "#FAF7EE",
+  "textPrimary": "#161413",
+  "textSecondary": "#57524E"
+};
+
+export const CUSTOM_FONTS = {
+  "headerFont": "'Cormorant Garamond', serif",
+  "bodyFont": "'Plus Jakarta Sans', sans-serif"
+};
+
 export const TOURIST_SURVIVAL_TIPS = COUNTRY_SURVIVAL_GUIDES;
