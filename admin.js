@@ -70,10 +70,10 @@ const state = {
       target: 'header'
     },
     hero: {
-      bgImage: '',
-      overlayOpacity: 45,
-      titleColor: '#161413',
-      subtitleColor: '#57524E'
+      bgImage: 'assets/images/hero_moodboard_cover.webp',
+      overlayOpacity: 55,
+      titleColor: '#FFFFFF',
+      subtitleColor: '#E5DFC9'
     },
     pillars: {
       clothingImg: 'assets/images/052c0477-e95d-453a-b503-b84704ca66f9.webp',
@@ -870,7 +870,7 @@ function initDesignPanels() {
   });
 
   document.getElementById('btnResetHeroBg').addEventListener('click', () => {
-    p.hero.bgImage = 'assets/images/d1a87027-4c2b-45ef-895b-58aae31407e7.webp';
+    p.hero.bgImage = 'assets/images/hero_moodboard_cover.webp';
     p.hero.titleColor = '#FFFFFF';
     p.hero.subtitleColor = '#E5DFC9';
     inpHeroBgUrl.value = p.hero.bgImage;
@@ -878,11 +878,11 @@ function initDesignPanels() {
     if (hexHeroTitleColor) hexHeroTitleColor.value = '#FFFFFF';
     if (pickerHeroSubtitleColor) pickerHeroSubtitleColor.value = '#E5DFC9';
     if (hexHeroSubtitleColor) hexHeroSubtitleColor.value = '#E5DFC9';
-    p.hero.overlayOpacity = 45;
-    rangeHeroOverlay.value = 45;
-    lblHeroOverlayVal.textContent = '45%';
+    p.hero.overlayOpacity = 55;
+    rangeHeroOverlay.value = 55;
+    lblHeroOverlayVal.textContent = '55%';
     heroPreviewBanner.style.backgroundImage = `url('${p.hero.bgImage}')`;
-    heroPreviewOverlay.style.opacity = 0.45;
+    heroPreviewOverlay.style.opacity = 0.55;
     safeStorage.set('cherevichka_design_panels', state.designPanels);
     showToast('Reset hero to luxury default');
   });
