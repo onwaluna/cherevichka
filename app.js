@@ -267,6 +267,26 @@ if (document.readyState === 'loading') {
   initApp();
 }
 
+// Live Real-Time Multi-Tab Synchronization with Admin Panel
+window.addEventListener('storage', (e) => {
+  if (e.key === 'cherevichka_design_panels') {
+    applyCustomDesignPanels();
+  }
+  if (e.key === 'cherevichka_custom_spots') {
+    renderSpots();
+    renderSpotlight();
+  }
+  if (e.key === 'cherevichka_custom_colors') {
+    applyCustomColors();
+  }
+  if (e.key === 'cherevichka_custom_fonts') {
+    applyCustomFonts();
+  }
+  if (e.key === 'cherevichka_custom_i18n' || e.key === 'cherevichka_lang') {
+    applyLanguage(state.lang);
+  }
+});
+
 /* ==========================================================================
    PAGE ROUTING / NAVIGATION (HOME <-> DIRECTORY)
    ========================================================================== */
@@ -280,6 +300,7 @@ function navigateTo(page, options = {}) {
     if (pageDirectory) pageDirectory.classList.remove('active-page');
     if (navTabHome) navTabHome.classList.add('active');
     if (navTabDirectory) navTabDirectory.classList.remove('active');
+    try { applyCustomDesignPanels(); } catch (e) {}
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } else if (page === 'directory') {
     if (pageHome) pageHome.classList.remove('active-page');

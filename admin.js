@@ -76,10 +76,10 @@ const state = {
       subtitleColor: '#E5DFC9'
     },
     pillars: {
-      clothingImg: 'assets/images/e213de95-ef12-45a0-a0da-362a0f43265f.webp',
-      shoesImg: 'assets/images/4d6497c6-bdbf-4d74-864a-ca4b68dfbf7f.webp',
-      vintageImg: 'assets/images/ac16aa4c-ae90-4511-81ec-27020e10e49c.webp',
-      jewelryImg: 'assets/images/33718ecc-4a03-4871-b1cd-422e7e49b25a.webp'
+      clothingImg: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1600&q=85',
+      shoesImg: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=1600&q=85',
+      vintageImg: 'https://images.unsplash.com/photo-1520006403909-838d6b92c22e?auto=format&fit=crop&w=1600&q=85',
+      jewelryImg: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1600&q=85'
     },
     manifesto: {
       bgImage: '',
@@ -516,7 +516,7 @@ function renderGalleryPreviews() {
   `).join('');
 }
 
-// Add Photo to gallery
+// Add Photo to gallery via URL
 document.getElementById('btnAddImageToGallery').addEventListener('click', () => {
   const inp = document.getElementById('inpSpotNewImage');
   const url = inp.value.trim();
@@ -526,6 +526,24 @@ document.getElementById('btnAddImageToGallery').addEventListener('click', () => 
     inp.value = '';
   }
 });
+
+// Upload Photo to gallery from File/Camera
+const fileSpotPhotoUpload = document.getElementById('fileSpotPhotoUpload');
+if (fileSpotPhotoUpload) {
+  fileSpotPhotoUpload.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      try {
+        const compressed = await compressImageFile(file, 1400, 0.85);
+        state.currentEditingGallery.push(compressed);
+        renderGalleryPreviews();
+        showToast('Photo compressed and added to spot gallery!');
+      } catch (err) {
+        showToast('Error uploading photo');
+      }
+    }
+  });
+}
 
 // Save Spot Form Submit
 document.getElementById('spotEditForm').addEventListener('submit', (e) => {

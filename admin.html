@@ -833,10 +833,14 @@
         <div class="form-block-card">
           <div class="block-card-title">4. Photo Gallery</div>
           <div class="admin-field-group">
-            <label class="admin-field-lbl">Add Image URL (Unsplash or direct image link)</label>
-            <div style="display: flex; gap: 0.5rem;">
-              <input type="url" id="inpSpotNewImage" class="admin-field-input" placeholder="https://images.unsplash.com/...">
-              <button type="button" class="btn-sidebar-action btn-view-site" id="btnAddImageToGallery">+ Add Photo</button>
+            <label class="admin-field-lbl">Upload from Computer / Phone or Paste Direct URL</label>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.5rem;">
+              <input type="file" id="fileSpotPhotoUpload" accept="image/*" class="hidden-file-input">
+              <label for="fileSpotPhotoUpload" class="btn-sidebar-action btn-edit-spot" style="cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.6rem 1rem;">
+                📁 Upload Photo from Device
+              </label>
+              <input type="url" id="inpSpotNewImage" class="admin-field-input" placeholder="Or paste image URL (https://...)" style="flex: 1; min-width: 220px;">
+              <button type="button" class="btn-sidebar-action btn-view-site" id="btnAddImageToGallery">+ Add URL</button>
             </div>
             <div class="image-preview-row" id="galleryPreviewRow"></div>
           </div>
