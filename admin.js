@@ -70,10 +70,10 @@ const state = {
       target: 'header'
     },
     hero: {
-      bgImage: 'assets/images/d1a87027-4c2b-45ef-895b-58aae31407e7.webp',
+      bgImage: '',
       overlayOpacity: 45,
-      titleColor: '#FFFFFF',
-      subtitleColor: '#E5DFC9'
+      titleColor: '#161413',
+      subtitleColor: '#57524E'
     },
     pillars: {
       clothingImg: 'assets/images/052c0477-e95d-453a-b503-b84704ca66f9.webp',

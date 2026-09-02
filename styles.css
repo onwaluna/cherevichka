@@ -2100,9 +2100,9 @@ input, textarea, select {
    MOBILE-FIRST OPTIMIZATIONS (TOUCH MAP & FLUID RESPONSIVENESS)
    ========================================================================== */
 
-/* Floating Mobile View Toggle (Map <-> List) */
+/* Floating Mobile View Toggle (Map <-> List) — ONLY visible when in Directory */
 .mobile-floating-view-toggle {
-  display: none;
+  display: none !important;
   position: fixed;
   bottom: 24px;
   left: 50%;
@@ -2121,6 +2121,16 @@ input, textarea, select {
   transition: all var(--transition-fast);
   align-items: center;
   gap: 0.5rem;
+}
+
+body.in-directory .mobile-floating-view-toggle {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  body.in-directory .mobile-floating-view-toggle {
+    display: inline-flex !important;
+  }
 }
 
 .mobile-floating-view-toggle:active {
@@ -2145,11 +2155,6 @@ input, textarea, select {
     overflow-x: hidden;
     box-sizing: border-box;
     margin: 0 auto;
-  }
-
-  /* Show floating mobile switcher on directory page */
-  .mobile-floating-view-toggle {
-    display: inline-flex;
   }
 
   /* Compact Header: Fits any mobile width cleanly in a single neat row */
