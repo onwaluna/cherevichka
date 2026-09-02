@@ -114,8 +114,9 @@ function applyCustomDesignPanels() {
       if (txtHeroTitle && h.titleColor) txtHeroTitle.style.color = h.titleColor;
       if (txtHeroSubtitle && h.subtitleColor) txtHeroSubtitle.style.color = h.subtitleColor;
 
-      if (h.bgImage) {
-        heroSection.style.backgroundImage = `url('${h.bgImage}')`;
+      const heroBg = h.bgImage || (BASE_PANELS && BASE_PANELS.hero && BASE_PANELS.hero.bgImage);
+      if (heroBg) {
+        heroSection.style.backgroundImage = `url('${heroBg}')`;
         heroSection.style.backgroundSize = h.bgFit || 'cover';
         heroSection.style.backgroundRepeat = h.bgFit === 'repeat' ? 'repeat' : 'no-repeat';
         heroOverlay.style.opacity = (h.overlayOpacity !== undefined ? h.overlayOpacity : 45) / 100;

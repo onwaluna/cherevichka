@@ -1593,16 +1593,16 @@ export const DESIGN_PANELS = {
     target: "header"
   },
   hero: {
-    bgImage: "",
+    bgImage: "assets/images/d1a87027-4c2b-45ef-895b-58aae31407e7.webp",
     overlayOpacity: 45,
     titleColor: "#FFFFFF",
     subtitleColor: "#E5DFC9"
   },
   pillars: {
-    clothingImg: "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1600&q=85",
-    shoesImg: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=1600&q=85",
-    vintageImg: "https://images.unsplash.com/photo-1520006403909-838d6b92c22e?auto=format&fit=crop&w=1600&q=85",
-    jewelryImg: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1600&q=85"
+    clothingImg: "assets/images/052c0477-e95d-453a-b503-b84704ca66f9.webp",
+    shoesImg: "assets/images/230639e5-678b-4ed1-9144-9fbb711bffaa.webp",
+    vintageImg: "assets/images/2c62d00e-05b0-4b75-a3ef-6157be54cf87.webp",
+    jewelryImg: "assets/images/42d4e17f-7138-46fa-be42-6a441782174d.webp"
   },
   manifesto: {
     bgImage: "",
