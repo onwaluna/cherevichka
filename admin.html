@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CHEREVICHKA Control Center — Visual Admin</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500;600;700&family=Italiana&family=JetBrains+Mono:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Syne:wght@500;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="admin.css">
+
+  <script>
+    // Universal Instant Lockscreen Handler (Works across ALL browsers, Private/Incognito, and file:// protocols)
+    function doUnlock() {
+      try { sessionStorage.setItem('cherevichka_admin_auth', 'true'); } catch(e) {}
+      try { localStorage.setItem('cherevichka_admin_auth', 'true'); } catch(e) {}
+      var el = document.getElementById('pinLockscreen');
+      if (el) {
+        el.classList.add('unlocked');
+        el.style.display = 'none';
+      }
+    }
+
+    function handleAdminLogin(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      doUnlock();
+      return false;
+    }
+
+    function quickUnlockAdmin() {
+      doUnlock();
+    }
+
+    try {
+      if (sessionStorage.getItem('cherevichka_admin_auth') === 'true' || localStorage.getItem('cherevichka_admin_auth') === 'true') {
+        window.addEventListener('DOMContentLoaded', function() {
+          doUnlock();
+        });
+      }
+    } catch(e) {}
+  </script>
+</head>
+<body>
+
+  <!-- ==================== PIN LOCKSCREEN ==================== -->
+  <div class="pin-lockscreen" id="pinLockscreen">
+    <div class="pin-card">
+      <div class="pin-logo">CHEREVICHKA<span style="color: var(--color-baby-blue);">.</span></div>
+      <div class="pin-subtitle">Control Center • Studio Access</div>
+      
+      <form id="pinForm" onsubmit="window.handleAdminLogin(event)">
+        <input type="text" id="pinInput" class="pin-input" placeholder="2026" autofocus>
+        <button type="submit" class="pin-btn">Enter Admin Panel →</button>
+      </form>
+      <div style="margin-top: 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; align-items: center;">
+        <button type="button" onclick="window.quickUnlockAdmin()" class="btn-sidebar-action btn-view-site" style="font-size: 0.82rem; padding: 0.55rem 1.2rem; background: #FAF7EE; color: #161413; border: 1px solid #D7CFBE; font-weight: 700;">
+          ⚡ 1-Click Founder Access
+        </button>
+        <div class="pin-hint">Default Access PIN: <strong>2026</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ADMIN APP WRAPPER ==================== -->
+  <div class="admin-wrapper">
+    
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">
+        <span>CHEREVICHKA</span>
+        <span class="admin-badge">ADMIN</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item-btn active" data-section="secSpots">
+          <span>🛍️</span> <span>Stores & Spots</span>
+        </button>
+        <button class="nav-item-btn" data-section="secLeads">
+          <span>📥</span> <span>Applications ($10 Leads)</span>
+          <span class="badge-count" id="adminLeadsBadge" style="position: static; margin-left: auto; font-size: 0.65rem;">0</span>
+        </button>
+        <button class="nav-item-btn" data-section="secPanels">
+          <span>🖼️</span> <span>Design Panels & Backgrounds</span>
+        </button>
+        <button class="nav-item-btn" data-section="secColors">
+          <span>🎨</span> <span>Colors & Typography</span>
+        </button>
+        <button class="nav-item-btn" data-section="secTexts">
+          <span>✍️</span> <span>Landing & Texts</span>
+        </button>
+        <button class="nav-item-btn" data-section="secExport">
+          <span>💾</span> <span>Save & Export</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="moodboard/index.html" target="_blank" class="btn-sidebar-action btn-view-site" style="background-color: #2D2722; border-color: #4A3E33;">
+          <span>🎨 Open Moodboard</span>
+        </a>
+        <a href="index.html" target="_blank" class="btn-sidebar-action btn-view-site">
+          <span>↗ View Live Site</span>
+        </a>
+        <button class="btn-sidebar-action btn-export-code" id="btnQuickExport">
+          <span>💾 Export spots.js</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="admin-main-area">
+      
+      <!-- ================= SECTION 1: STORES & SPOTS ================= -->
+      <section class="admin-section active-section" id="secSpots">
+        <div class="section-top-header">
+          <div>
+            <h1 class="section-main-title">Stores & Fashion Spots</h1>
+            <p class="section-main-desc">Manage all curated vintage boutiques, designers, secret passcodes and discounts.</p>
+          </div>
+          <button class="btn-create-action" id="btnAddNewSpot">
+            <span>+ Add New Spot</span>
+          </button>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="admin-stats-grid">
+          <div class="admin-stat-card">
+            <div class="stat-val-big" id="statTotalSpots">0</div>
+            <div class="stat-label-small">Total Curated Spots</div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="stat-val-big" id="statMskSpots">0</div>
+            <div class="stat-label-small">Moscow Locations</div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="stat-val-big" id="statSpbSpots">0</div>
+            <div class="stat-label-small">St. Petersburg</div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="stat-val-big" id="statEditorPicks">0</div>
+            <div class="stat-label-small">Editor's Picks</div>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="admin-toolbar-row">
+          <input type="text" id="adminSearchSpots" class="admin-search-input" placeholder="Search spots by name, district, or tag...">
+          <div style="display: flex; gap: 0.5rem;">
+            <select id="adminFilterCity" class="admin-field-select" style="padding: 0.5rem 0.8rem;">
+              <option value="all">All Destinations</option>
+              <option value="russia">🇷🇺 Russia (MSK·SPB)</option>
+              <option value="japan">🇯🇵 Japan (Tokyo·Kyoto)</option>
+              <option value="uae">✨ UAE (Dubai)</option>
+              <option value="bali">🌴 Bali (Canggu·Seminyak)</option>
+              <option value="thailand">🇹🇭 Thailand (Bangkok)</option>
+            </select>
+            <select id="adminFilterCat" class="admin-field-select" style="padding: 0.5rem 0.8rem;">
+              <option value="all">All Themes</option>
+              <option value="clothing">Clothing</option>
+              <option value="shoes-bags">Shoes & Bags</option>
+              <option value="vintage-archive">Vintage Archives</option>
+              <option value="jewelry-accs">Jewelry & Accs</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Spots Table -->
+        <div class="admin-spots-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Photo</th>
+                <th>Name / Cyrillic</th>
+                <th>City / District</th>
+                <th>Theme</th>
+                <th>Price</th>
+                <th>Perk / Code</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminSpotsTableBody">
+              <!-- Rendered via admin.js -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= SECTION 1.5: INBOUND APPLICATIONS ($10 LEADS) ================= -->
+      <section class="admin-section" id="secLeads">
+        <div class="section-top-header">
+          <div>
+            <h1 class="section-main-title">Store Applications & $10 Leads</h1>
+            <p class="section-main-desc">Manage inbound applications from boutique founders wishing to be listed for $10/month.</p>
+          </div>
+          <button class="btn-create-action" id="btnExportLeadsCsv">
+            <span>📥 Export Leads (CSV)</span>
+          </button>
+        </div>
+
+        <div class="admin-toolbar-row">
+          <input type="text" id="adminSearchLeads" class="admin-search-input" placeholder="Search applications by store, email, city...">
+          <select id="adminFilterLeadsStatus" class="admin-field-select" style="padding: 0.5rem 0.8rem;">
+            <option value="all">All Applications</option>
+            <option value="pending">Pending Review</option>
+            <option value="approved">Approved & Listed</option>
+          </select>
+        </div>
+
+        <div class="admin-spots-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Store / Brand</th>
+                <th>Founder Email</th>
+                <th>Destination</th>
+                <th>Theme & Price</th>
+                <th>Contact</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminLeadsTableBody">
+              <!-- Rendered via admin.js -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= SECTION 2: DESIGN PANELS & BACKGROUNDS ================= -->
+      <section class="admin-section" id="secPanels">
+        <div class="section-top-header">
+          <div>
+            <h1 class="section-main-title">Design Panels & Backgrounds</h1>
+            <p class="section-main-desc">Upload background images, textures, and custom covers for layout panels, top header, and category cards.</p>
+          </div>
+          <button class="btn-create-action" id="btnSavePanels">
+            <span>Apply Panels to Live Site →</span>
+          </button>
+        </div>
+
+        <!-- 0. Top Header & Upper Beige Background Customizer -->
+        <div class="panel-card-container">
+          <div class="block-card-title">0. Top Element / Header & Beige Background (Цвет заливки и фон)</div>
+          <p style="font-size: 0.88rem; color: var(--admin-text-muted); margin-top: -0.8rem;">Choose a solid palette color fill OR upload a custom image/texture for the top header bar and page background.</p>
+          
+          <div class="panel-preview-banner" id="headerPreviewBanner" style="height: 110px; background-color: #FAF7EE;">
+            <div class="panel-preview-content">
+              <div class="brand-logo" style="font-size: 1.6rem; color: var(--color-red-ochre);">CHEREVICHKA<span class="dot" style="font-size: 1.8rem;">.</span></div>
+              <span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--admin-text-muted);" id="headerPreviewLabel">LIVE PREVIEW</span>
+            </div>
+          </div>
+
+          <!-- Color Fill & Quick Swatches Row -->
+          <div class="form-block-card" style="background-color: var(--admin-card-bg); border: 1px solid var(--admin-border); padding: 1.2rem;">
+            <div style="font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--color-red-ochre); margin-bottom: 0.6rem;">
+              🎨 Option A: Solid Color Fill (Заливка цветом из палитры)
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="color" id="pickerHeaderBgColor" value="#FAF7EE" class="native-color-picker">
+                <input type="text" id="hexHeaderBgColor" value="#FAF7EE" class="color-hex-text" style="width: 110px;">
+              </div>
+
+              <!-- Quick Brand Palette Preset Buttons -->
+              <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                <span style="font-size: 0.75rem; color: var(--admin-text-muted);">Quick Presets:</span>
+                <button type="button" class="btn-preset-swatch" data-preset-color="#FAF7EE" style="background-color: #FAF7EE; border: 1px solid #C5BFA9;" title="Warm Vanilla (#FAF7EE)"></button>
+                <button type="button" class="btn-preset-swatch" data-preset-color="#D7CFBE" style="background-color: #D7CFBE; border: 1px solid #A89F8B;" title="Parchment Bone (#D7CFBE)"></button>
+                <button type="button" class="btn-preset-swatch" data-preset-color="#858248" style="background-color: #858248;" title="Olive Brass (#858248)"></button>
+                <button type="button" class="btn-preset-swatch" data-preset-color="#937C91" style="background-color: #937C91;" title="Dusty Amethyst (#937C91)"></button>
+                <button type="button" class="btn-preset-swatch" data-preset-color="#491B12" style="background-color: #491B12;" title="Deep Mahogany (#491B12)"></button>
+                <button type="button" class="btn-preset-swatch" data-preset-color="#913731" style="background-color: #913731;" title="Red Ochre (#913731)"></button>
+                <button type="button" class="btn-preset-swatch" data-preset-color="#B5C8D4" style="background-color: #B5C8D4;" title="Baby Blue (#B5C8D4)"></button>
+                <button type="button" class="btn-preset-swatch" data-preset-color="#161413" style="background-color: #161413;" title="Charcoal Noir (#161413)"></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Option B: Image / Texture Upload Row -->
+          <div class="form-grid-2">
+            <div class="upload-dropzone-box">
+              <span style="font-size: 1.6rem;">🖼️</span>
+              <span style="font-size: 0.85rem; font-weight: 600;">Option B: Upload Background Image / Texture</span>
+              <label class="btn-file-upload">
+                <span>Choose Image File...</span>
+                <input type="file" id="fileHeaderBg" accept="image/*" class="hidden-file-input">
+              </label>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+              <div class="admin-field-group">
+                <label class="admin-field-lbl">Or Paste Texture URL</label>
+                <input type="url" id="inpHeaderBgUrl" class="admin-field-input" placeholder="https://images.unsplash.com/...">
+              </div>
+
+              <div class="admin-field-group">
+                <label class="admin-field-lbl">Apply Target</label>
+                <select id="selHeaderBgTarget" class="admin-field-select">
+                  <option value="header">Top Header Bar Only (Только шапка)</option>
+                  <option value="both">Both Header & Entire Page Background (Шапка и весь фон сайта)</option>
+                </select>
+              </div>
+
+              <div style="display: flex; gap: 0.5rem;">
+                <button type="button" class="btn-sidebar-action btn-view-site" id="btnResetHeaderBg">Reset to Default Vanilla</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1. Hero Section Panel -->
+        <div class="panel-card-container">
+          <div class="block-card-title">1. Hero Section (First Screen Presentation & Background)</div>
+          
+          <div class="panel-preview-banner" id="heroPreviewBanner">
+            <div class="panel-preview-overlay" id="heroPreviewOverlay"></div>
+            <div class="panel-preview-content">
+              <h3 class="font-serif" style="font-size: 1.8rem; font-weight: 700; color: #FFFFFF;" id="heroPreviewTitle">The Hidden Wardrobes</h3>
+              <p style="font-size: 0.85rem; color: #E5DFC9;">Live Background Preview with Custom Overlay</p>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="upload-dropzone-box">
+              <span style="font-size: 1.6rem;">📁</span>
+              <span style="font-size: 0.85rem; font-weight: 600;">Upload Hero Background / Artwork from PC</span>
+              <label class="btn-file-upload">
+                <span>Choose Image File...</span>
+                <input type="file" id="fileHeroBg" accept="image/*" class="hidden-file-input">
+              </label>
+              <span style="font-size: 0.75rem; color: var(--admin-text-muted);">Supports PNG, JPG, WebP in any resolution (1080p, 4K, 8K)</span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+              <div class="admin-field-group">
+                <label class="admin-field-lbl">Or Paste Image URL</label>
+                <input type="url" id="inpHeroBgUrl" class="admin-field-input" placeholder="https://images.unsplash.com/...">
+              </div>
+
+              <div class="form-grid-2">
+                <div class="admin-field-group">
+                  <label class="admin-field-lbl">Hero Title Color (Цвет заголовка)</label>
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="color" id="pickerHeroTitleColor" value="#FFFFFF" class="native-color-picker">
+                    <input type="text" id="hexHeroTitleColor" value="#FFFFFF" class="color-hex-text">
+                  </div>
+                </div>
+
+                <div class="admin-field-group">
+                  <label class="admin-field-lbl">Hero Subtitle / Description Color (Описательный текст)</label>
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="color" id="pickerHeroSubtitleColor" value="#E5DFC9" class="native-color-picker">
+                    <input type="text" id="hexHeroSubtitleColor" value="#E5DFC9" class="color-hex-text">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick Presets for Hero Subtitle -->
+              <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                <span style="font-size: 0.72rem; color: var(--admin-text-muted);">Subtitle Presets:</span>
+                <button type="button" class="btn-preset-swatch" data-hero-sub-preset="#E5DFC9" style="background-color: #E5DFC9;" title="Warm Silk Ivory (#E5DFC9)"></button>
+                <button type="button" class="btn-preset-swatch" data-hero-sub-preset="#FFFFFF" style="background-color: #FFFFFF;" title="Pure White (#FFFFFF)"></button>
+                <button type="button" class="btn-preset-swatch" data-hero-sub-preset="#B5C8D4" style="background-color: #B5C8D4;" title="Baby Blue (#B5C8D4)"></button>
+                <button type="button" class="btn-preset-swatch" data-hero-sub-preset="#D7CFBE" style="background-color: #D7CFBE;" title="Parchment Bone (#D7CFBE)"></button>
+                <button type="button" class="btn-preset-swatch" data-hero-sub-preset="#858248" style="background-color: #858248;" title="Olive Brass (#858248)"></button>
+                <button type="button" class="btn-preset-swatch" data-hero-sub-preset="#937C91" style="background-color: #937C91;" title="Dusty Amethyst (#937C91)"></button>
+                <button type="button" class="btn-preset-swatch" data-hero-sub-preset="#491B12" style="background-color: #491B12;" title="Deep Mahogany (#491B12)"></button>
+                <button type="button" class="btn-preset-swatch" data-hero-sub-preset="#161413" style="background-color: #161413;" title="Charcoal Noir (#161413)"></button>
+              </div>
+
+              <div class="admin-field-group">
+                <label class="admin-field-lbl">Overlay Darkness (<span id="lblHeroOverlayVal">45%</span>)</label>
+                <input type="range" id="rangeHeroOverlay" min="0" max="85" value="45" class="admin-range-slider">
+              </div>
+
+              <div style="display: flex; gap: 0.5rem; margin-top: 0.3rem;">
+                <button type="button" class="btn-sidebar-action btn-view-site" id="btnResetHeroBg">Reset Hero Background</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. The 4 Category Pillars Covers -->
+        <div class="panel-card-container">
+          <div class="block-card-title">2. Category Pillar Cards (Covers & Photos)</div>
+          <p style="font-size: 0.88rem; color: var(--admin-text-muted); margin-top: -0.8rem;">Customize the main visual cover photos for the 4 core entry gateways.</p>
+          
+          <div class="pillars-admin-grid">
+            
+            <!-- Clothing -->
+            <div class="pillar-admin-item">
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <strong style="font-size: 0.95rem;">🧥 Clothing</strong>
+              </div>
+              <img src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=800&q=80" id="thumbPillarClothing" class="pillar-admin-thumb" alt="Clothing">
+              <label class="btn-file-upload" style="width: 100%; justify-content: center;">
+                <span>📁 Upload File...</span>
+                <input type="file" id="filePillarClothing" accept="image/*" class="hidden-file-input">
+              </label>
+              <input type="url" id="inpUrlPillarClothing" class="admin-field-input" placeholder="Or paste URL...">
+            </div>
+
+            <!-- Shoes & Bags -->
+            <div class="pillar-admin-item">
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <strong style="font-size: 0.95rem;">👢 Shoes & Bags</strong>
+              </div>
+              <img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=800&q=80" id="thumbPillarShoes" class="pillar-admin-thumb" alt="Shoes">
+              <label class="btn-file-upload" style="width: 100%; justify-content: center;">
+                <span>📁 Upload File...</span>
+                <input type="file" id="filePillarShoes" accept="image/*" class="hidden-file-input">
+              </label>
+              <input type="url" id="inpUrlPillarShoes" class="admin-field-input" placeholder="Or paste URL...">
+            </div>
+
+            <!-- Vintage Archives -->
+            <div class="pillar-admin-item">
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <strong style="font-size: 0.95rem;">📻 Vintage Archives</strong>
+              </div>
+              <img src="https://images.unsplash.com/photo-1520006403909-838d6b92c22e?auto=format&fit=crop&w=800&q=80" id="thumbPillarVintage" class="pillar-admin-thumb" alt="Vintage">
+              <label class="btn-file-upload" style="width: 100%; justify-content: center;">
+                <span>📁 Upload File...</span>
+                <input type="file" id="filePillarVintage" accept="image/*" class="hidden-file-input">
+              </label>
+              <input type="url" id="inpUrlPillarVintage" class="admin-field-input" placeholder="Or paste URL...">
+            </div>
+
+            <!-- Jewelry & Accs -->
+            <div class="pillar-admin-item">
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <strong style="font-size: 0.95rem;">💍 Jewelry & Accs</strong>
+              </div>
+              <img src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80" id="thumbPillarJewelry" class="pillar-admin-thumb" alt="Jewelry">
+              <label class="btn-file-upload" style="width: 100%; justify-content: center;">
+                <span>📁 Upload File...</span>
+                <input type="file" id="filePillarJewelry" accept="image/*" class="hidden-file-input">
+              </label>
+              <input type="url" id="inpUrlPillarJewelry" class="admin-field-input" placeholder="Or paste URL...">
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 3. Manifesto & Footer Panel -->
+        <div class="panel-card-container">
+          <div class="block-card-title">3. Manifesto Banner Background & Texture</div>
+          
+          <div class="form-grid-2">
+            <div class="upload-dropzone-box">
+              <span style="font-size: 1.6rem;">📜</span>
+              <span style="font-size: 0.85rem; font-weight: 600;">Upload Manifesto Texture / Fabric</span>
+              <label class="btn-file-upload">
+                <span>Choose Texture File...</span>
+                <input type="file" id="fileManifestoBg" accept="image/*" class="hidden-file-input">
+              </label>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+              <div class="admin-field-group">
+                <label class="admin-field-lbl">Or Texture URL</label>
+                <input type="url" id="inpManifestoBgUrl" class="admin-field-input" placeholder="https://images.unsplash.com/...">
+              </div>
+              <div class="admin-field-group">
+                <label class="admin-field-lbl">Manifesto Overlay Opacity (<span id="lblManifestoOverlayVal">20%</span>)</label>
+                <input type="range" id="rangeManifestoOverlay" min="0" max="85" value="20" class="admin-range-slider">
+              </div>
+              <button type="button" class="btn-sidebar-action btn-view-site" id="btnResetManifestoBg">Reset Manifesto Background</button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= SECTION 3: COLORS & TYPOGRAPHY ================= -->
+      <section class="admin-section" id="secColors">
+        <div class="section-top-header">
+          <div>
+            <h1 class="section-main-title">Colors & Typography Theme</h1>
+            <p class="section-main-desc">Visually tweak the luxury color palette and curated font pairings. Changes apply live to the entire site!</p>
+          </div>
+          <button class="btn-create-action" id="btnResetColors">
+            <span>Reset to Moodboard Defaults</span>
+          </button>
+        </div>
+
+        <!-- 1. Typography & Font Families Customizer -->
+        <div class="panel-card-container">
+          <div class="block-card-title">1. Curated Typography & Font Pairing (Выбор шрифтов)</div>
+          
+          <div class="form-grid-2">
+            <div class="admin-field-group">
+              <label class="admin-field-lbl">Header & Title Font (Заголовочный шрифт)</label>
+              <select id="selHeaderFont" class="admin-field-select">
+                <option value="'Cormorant Garamond', serif">Cormorant Garamond (Vogue & Haute Couture) [Default]</option>
+                <option value="'Playfair Display', serif">Playfair Display (European Classic Luxury)</option>
+                <option value="'Syne', sans-serif">Syne (Avant-Garde Art Direction)</option>
+                <option value="'Bodoni Moda', serif">Bodoni Moda (High Fashion Editorial)</option>
+                <option value="'Cinzel', serif">Cinzel (Classical Roman Elegance)</option>
+                <option value="'Italiana', serif">Italiana (Milanese Minimalist Luxury)</option>
+              </select>
+            </div>
+
+            <div class="admin-field-group">
+              <label class="admin-field-lbl">Body & Interface Font (Основной текст)</label>
+              <select id="selBodyFont" class="admin-field-select">
+                <option value="'Plus Jakarta Sans', sans-serif">Plus Jakarta Sans (Modern Editorial Clean) [Default]</option>
+                <option value="'Inter', sans-serif">Inter (Sleek Swiss Minimalist)</option>
+                <option value="'DM Sans', sans-serif">DM Sans (Warm & Contemporary)</option>
+                <option value="'Montserrat', sans-serif">Montserrat (Geometric Architectural)</option>
+                <option value="'Space Grotesk', sans-serif">Space Grotesk (Underground Brutalist)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Live Typography Preview Card -->
+          <div style="background-color: var(--admin-surface); border: 1px solid var(--admin-border); border-radius: var(--radius-md); padding: 1.5rem; margin-top: 0.5rem;" id="typographyLivePreview">
+            <div style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--admin-text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">Live Typography Preview</div>
+            <h2 id="prevHeadingSample" style="font-size: 2rem; font-weight: 700; line-height: 1.15; color: var(--color-red-ochre); margin-bottom: 0.4rem;">
+              The Hidden Wardrobes of Moscow & St. Petersburg.
+            </h2>
+            <p id="prevBodySample" style="font-size: 0.95rem; color: #57524E; line-height: 1.55; max-width: 680px;">
+              An insider guide to secretive vintage archives, indie tailors, and avant-garde designers. Built for international collectors and discerning travelers.
+            </p>
+          </div>
+        </div>
+
+        <!-- 2. Color Palette Swatches -->
+        <div class="block-card-title" style="margin: 1.5rem 0 1rem;">2. Signature Brand Color Palette</div>
+        <div class="color-pickers-grid">
+          
+          <!-- 1. Red Ochre -->
+          <div class="color-card-item">
+            <label class="admin-field-lbl">Primary Accent (Red Ochre / Охра)</label>
+            <div class="color-swatch-box" id="swatchRedOchre" style="background-color: #913731;"></div>
+            <div class="color-picker-input-row">
+              <input type="color" id="pickerRedOchre" value="#913731" class="native-color-picker">
+              <input type="text" id="hexRedOchre" value="#913731" class="color-hex-text">
+            </div>
+            <span style="font-size: 0.75rem; color: var(--admin-text-muted);">Used for headings, main CTA buttons, and pins.</span>
+          </div>
+
+          <!-- 2. Baby Blue -->
+          <div class="color-card-item">
+            <label class="admin-field-lbl">Secondary Accent (Baby Blue / Небесный)</label>
+            <div class="color-swatch-box" id="swatchBabyBlue" style="background-color: #B5C8D4;"></div>
+            <div class="color-picker-input-row">
+              <input type="color" id="pickerBabyBlue" value="#B5C8D4" class="native-color-picker">
+              <input type="text" id="hexBabyBlue" value="#B5C8D4" class="color-hex-text">
+            </div>
+            <span style="font-size: 0.75rem; color: var(--admin-text-muted);">Used for pill badges, borders and highlight tags.</span>
+          </div>
+
+          <!-- 3. Warm Vanilla Background -->
+          <div class="color-card-item">
+            <label class="admin-field-lbl">Main Background (Warm Vanilla / Крем)</label>
+            <div class="color-swatch-box" id="swatchBgPrimary" style="background-color: #FAF7EE;"></div>
+            <div class="color-picker-input-row">
+              <input type="color" id="pickerBgPrimary" value="#FAF7EE" class="native-color-picker">
+              <input type="text" id="hexBgPrimary" value="#FAF7EE" class="color-hex-text">
+            </div>
+            <span style="font-size: 0.75rem; color: var(--admin-text-muted);">Page background editorial cream tone.</span>
+          </div>
+
+          <!-- 4. Text Noir -->
+          <div class="color-card-item">
+            <label class="admin-field-lbl">Primary Headings (Charcoal Noir / Заголовки)</label>
+            <div class="color-swatch-box" id="swatchTextPrimary" style="background-color: #161413;"></div>
+            <div class="color-picker-input-row">
+              <input type="color" id="pickerTextPrimary" value="#161413" class="native-color-picker">
+              <input type="text" id="hexTextPrimary" value="#161413" class="color-hex-text">
+            </div>
+            <span style="font-size: 0.75rem; color: var(--admin-text-muted);">Main typography and high-contrast titles.</span>
+          </div>
+
+          <!-- 5. Descriptive / Subtitle Text (Secondary Text) -->
+          <div class="color-card-item">
+            <label class="admin-field-lbl">Descriptive / Subtitle Text (Описательный текст)</label>
+            <div class="color-swatch-box" id="swatchTextSecondary" style="background-color: #57524E;"></div>
+            <div class="color-picker-input-row">
+              <input type="color" id="pickerTextSecondary" value="#57524E" class="native-color-picker">
+              <input type="text" id="hexTextSecondary" value="#57524E" class="color-hex-text">
+            </div>
+            <span style="font-size: 0.75rem; color: var(--admin-text-muted);">Controls hero subtitle, curator snippets, and card descriptions.</span>
+          </div>
+
+        </div>
+
+        <button class="btn-create-action" id="btnSaveColors">
+          <span>Apply Colors & Fonts to Live Site →</span>
+        </button>
+      </section>
+
+      <!-- ================= SECTION 3: LANDING & TEXTS ================= -->
+      <section class="admin-section" id="secTexts">
+        <div class="section-top-header">
+          <div>
+            <h1 class="section-main-title">Landing Texts & Manifesto</h1>
+            <p class="section-main-desc">Edit headlines, brand manifesto, and descriptions across all 3 languages.</p>
+          </div>
+          <button class="btn-create-action" id="btnSaveTexts">
+            <span>Save All Texts</span>
+          </button>
+        </div>
+
+        <!-- Language Tabs for Texts -->
+        <div class="editor-lang-tabs" style="margin-bottom: 1.5rem;" id="landingTextLangTabs">
+          <button class="editor-lang-btn active" data-text-lang="en">🇬🇧 English</button>
+          <button class="editor-lang-btn" data-text-lang="ru">🇷🇺 Русский</button>
+          <button class="editor-lang-btn" data-text-lang="zh">🇨🇳 中文</button>
+        </div>
+
+        <div class="form-block-card">
+          <div class="block-card-title">1. Hero Section Texts</div>
+          <div class="admin-field-group">
+            <label class="admin-field-lbl">Hero Title</label>
+            <input type="text" id="inpTextHeroTitle" class="admin-field-input">
+          </div>
+          <div class="admin-field-group">
+            <label class="admin-field-lbl">Hero Subtitle</label>
+            <textarea id="inpTextHeroSubtitle" class="admin-field-textarea" rows="2"></textarea>
+          </div>
+        </div>
+
+        <div class="form-block-card" style="margin-top: 1.5rem;">
+          <div class="block-card-title">2. Manifesto & Concept Story</div>
+          <div class="admin-field-group">
+            <label class="admin-field-lbl">Manifesto Headline</label>
+            <input type="text" id="inpTextManifestoTitle" class="admin-field-input">
+          </div>
+          <div class="admin-field-group">
+            <label class="admin-field-lbl">Paragraph 1 (The Problem with Malls)</label>
+            <textarea id="inpTextManifestoP1" class="admin-field-textarea" rows="3"></textarea>
+          </div>
+          <div class="admin-field-group">
+            <label class="admin-field-lbl">Paragraph 2 (Cherevichka Solution)</label>
+            <textarea id="inpTextManifestoP2" class="admin-field-textarea" rows="3"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SECTION 4: SAVE & EXPORT ================= -->
+      <section class="admin-section" id="secExport">
+        <div class="section-top-header">
+          <div>
+            <h1 class="section-main-title">Save & Export data/spots.js</h1>
+            <p class="section-main-desc">Download the updated code file to permanently keep your changes in the folder.</p>
+          </div>
+        </div>
+
+        <div class="form-block-card" style="background: #FFFFFF;">
+          <div class="block-card-title">⚡ How saving works:</div>
+          <p style="font-size: 0.95rem; line-height: 1.6; color: var(--admin-text-main);">
+            1. Whenever you edit or add a spot in this Admin Panel, it is <strong>instantly saved in your browser</strong>.<br>
+            2. To permanently update your project folder on your computer, click the button below to download the updated <code>spots.js</code> file.<br>
+            3. Simply replace the file inside your <code>data/spots.js</code> folder. Done!
+          </p>
+
+          <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+            <button class="btn-create-action" id="btnDownloadSpotsFile" style="background-color: var(--color-green);">
+              <span>💾 Download Updated data/spots.js</span>
+            </button>
+            <button class="btn-create-action" id="btnResetToDefaults" style="background-color: #C0392B;">
+              <span>⚠️ Restore Original Sample Data</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ==================== SPOT EDITOR DRAWER MODAL ==================== -->
+  <div class="admin-modal-overlay" id="spotEditorModal">
+    <div class="admin-drawer-form">
+      <div class="drawer-top-bar">
+        <h2 class="font-serif" style="font-size: 1.6rem; font-weight: 700;" id="spotEditorModalTitle">Edit Fashion Spot</h2>
+        <button class="action-icon-btn" id="closeSpotEditorBtn">✕</button>
+      </div>
+
+      <form class="drawer-form-body" id="spotEditForm">
+        
+        <!-- Language Sub-tabs for Trilingual inputs -->
+        <div class="editor-lang-tabs" id="spotEditorLangTabs">
+          <button type="button" class="editor-lang-btn active" data-spot-lang="en">🇬🇧 English</button>
+          <button type="button" class="editor-lang-btn" data-spot-lang="ru">🇷🇺 Русский</button>
+          <button type="button" class="editor-lang-btn" data-spot-lang="zh">🇨🇳 中文</button>
+        </div>
+
+        <!-- Basic Info Card -->
+        <div class="form-block-card">
+          <div class="block-card-title">1. Essential Details</div>
+          
+          <div class="form-grid-2">
+            <div class="admin-field-group">
+              <label class="admin-field-lbl">Store Name (Latin)</label>
+              <input type="text" id="inpSpotName" class="admin-field-input" placeholder="e.g. Strogo Vintage" required>
+            </div>
+            <div class="admin-field-group">
+              <label class="admin-field-lbl">Cyrillic Name (Русское название)</label>
+              <input type="text" id="inpSpotCyrillicName" class="admin-field-input" placeholder="e.g. Строго Винтаж" required>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="admin-field-group">
+              <label class="admin-field-lbl">Destination / Country</label>
+              <select id="inpSpotCity" class="admin-field-select">
+                <option value="russia">🇷🇺 Russia (Moscow / SPB)</option>
+                <option value="japan">🇯🇵 Japan (Tokyo / Kyoto)</option>
+                <option value="uae">✨ UAE (Dubai)</option>
+                <option value="bali">🌴 Bali (Canggu / Seminyak / Ubud)</option>
+                <option value="thailand">🇹🇭 Thailand (Bangkok)</option>
+                <option value="other">Other Global Destination</option>
+              </select>
+            </div>
+            <div class="admin-field-group">
+              <label class="admin-field-lbl">District Name (<span id="lblDistrictLang">EN</span>)</label>
+              <input type="text" id="inpSpotDistrict" class="admin-field-input" placeholder="e.g. Pokrovsky Boulevard" required>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="admin-field-group">
+              <label class="admin-field-lbl">Address (Latin)</label>
+              <input type="text" id="inpSpotAddress" class="admin-field-input" placeholder="e.g. Pokrovsky Blvd 14, bldg 1" required>
+            </div>
+            <div class="admin-field-group">
+              <label class="admin-field-lbl">Cyrillic Address (Для такси)</label>
+              <input type="text" id="inpSpotCyrillicAddress" class="admin-field-input" placeholder="e.g. Покровский бульвар, 14/2с1" required>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="admin-field-group">
+              <label class="admin-field-lbl">Coordinates (Latitude, Longitude)</label>
+              <input type="text" id="inpSpotCoords" class="admin-field-input" placeholder="55.7562, 37.6492" required>
+            </div>
+            <div class="admin-field-group">
+              <label class="admin-field-lbl">Price Range</label>
+              <select id="inpSpotPrice" class="admin-field-select">
+                <option value="$">$ (Affordable)</option>
+                <option value="$$">$$ (Mid-Range)</option>
+                <option value="$$$">$$$ (Archival / Luxury)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Categorization Card -->
+        <div class="form-block-card">
+          <div class="block-card-title">2. Category & Styles</div>
+          <div class="form-grid-2">
+            <div class="admin-field-group">
+              <label class="admin-field-lbl">Primary Theme</label>
+              <select id="inpSpotCategory" class="admin-field-select">
+                <option value="clothing">🧥 Clothing</option>
+                <option value="shoes-bags">👢 Shoes & Bags</option>
+                <option value="vintage-archive">📻 Vintage Archives</option>
+                <option value="jewelry-accs">💍 Jewelry & Accessories</option>
+              </select>
+            </div>
+            <div class="admin-field-group">
+              <label class="admin-field-lbl">Editor's Pick?</label>
+              <select id="inpSpotEditorPick" class="admin-field-select">
+                <option value="true">★ Yes (Featured on Homepage)</option>
+                <option value="false">No (Standard Listing)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="admin-field-group">
+            <label class="admin-field-lbl">Styles (Select all matching)</label>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.3rem;">
+              <label><input type="checkbox" name="spotStyles" value="runway-archive"> Runway & Archive</label>
+              <label><input type="checkbox" name="spotStyles" value="minimal-oldmoney"> Minimal & Old Money</label>
+              <label><input type="checkbox" name="spotStyles" value="soviet-heritage"> Soviet 80s-90s</label>
+              <label><input type="checkbox" name="spotStyles" value="avantgarde-upcycle"> Avant-Garde & Upcycle</label>
+              <label><input type="checkbox" name="spotStyles" value="streetwear-y2k"> Underground & Y2K</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trilingual Story & Secret Passcodes Card -->
+        <div class="form-block-card">
+          <div class="block-card-title">3. Story, Passcodes & Perk (<span id="lblStoryLang">EN</span>)</div>
+          
+          <div class="admin-field-group">
+            <label class="admin-field-lbl">Curator's Review / Story</label>
+            <textarea id="inpSpotCuratorNote" class="admin-field-textarea" rows="3" placeholder="Why is this store extraordinary?"></textarea>
+          </div>
+
+          <div class="admin-field-group">
+            <label class="admin-field-lbl">Secret Entrance Guide / Gate Passcodes</label>
+            <textarea id="inpSpotHowToFind" class="admin-field-textarea" rows="2" placeholder="e.g. Enter green arch, ring code 14#..."></textarea>
+          </div>
+
+          <div class="admin-field-group">
+            <label class="admin-field-lbl">Tourist Perk / Gift / Discount Description</label>
+            <input type="text" id="inpSpotTouristPerk" class="admin-field-input" placeholder="e.g. 5% off with code CHEREVICHKA">
+          </div>
+        </div>
+
+        <!-- Photos Card -->
+        <div class="form-block-card">
+          <div class="block-card-title">4. Photo Gallery</div>
+          <div class="admin-field-group">
+            <label class="admin-field-lbl">Add Image URL (Unsplash or direct image link)</label>
+            <div style="display: flex; gap: 0.5rem;">
+              <input type="url" id="inpSpotNewImage" class="admin-field-input" placeholder="https://images.unsplash.com/...">
+              <button type="button" class="btn-sidebar-action btn-view-site" id="btnAddImageToGallery">+ Add Photo</button>
+            </div>
+            <div class="image-preview-row" id="galleryPreviewRow"></div>
+          </div>
+        </div>
+
+        <!-- Social & Practical Specs -->
+        <div class="form-block-card">
+          <div class="block-card-title">5. Practical Details & Contacts</div>
+          <div class="form-grid-2">
+            <div class="admin-field-group">
+              <label class="admin-field-lbl">Opening Hours</label>
+              <input type="text" id="inpSpotHours" class="admin-field-input" placeholder="Daily 12:00 – 21:00">
+            </div>
+            <div class="admin-field-group">
+              <label class="admin-field-lbl">English Staff Level</label>
+              <select id="inpSpotEnglishStaff" class="admin-field-select">
+                <option value="Fluent">Fluent (Свободный)</option>
+                <option value="Good">Good (Хороший)</option>
+                <option value="Basic">Basic (Базовый)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="admin-field-group">
+              <label class="admin-field-lbl">Instagram Handle</label>
+              <input type="text" id="inpSpotInstagram" class="admin-field-input" placeholder="@brand">
+            </div>
+            <div class="admin-field-group">
+              <label class="admin-field-lbl">Telegram Link</label>
+              <input type="text" id="inpSpotTelegram" class="admin-field-input" placeholder="t.me/brand">
+            </div>
+          </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+          <button type="submit" class="btn-create-action" style="flex: 1; justify-content: center; padding: 1rem;">
+            <span>Save Fashion Spot →</span>
+          </button>
+          <button type="button" class="btn-sidebar-action btn-view-site" id="cancelSpotEditBtn" style="padding: 1rem 1.5rem;">
+            Cancel
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin Toast Container -->
+  <div id="adminToastContainer"></div>
+
+  <!-- Admin Logic Script -->
+  <script type="module" src="admin.js"></script>
+</body>
+</html>

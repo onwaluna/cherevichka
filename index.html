@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CHEREVICHKA — Luxury Insider Fashion & Vintage Directory</title>
+  <meta name="description" content="The ultimate trilingual insider guide to hidden vintage boutiques, Soviet archives, and avant-garde designers in Moscow & St. Petersburg.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👢</text></svg>">
+  
+  <!-- Google Fonts Curated Typography Collection -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500;600;700&family=Italiana&family=JetBrains+Mono:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Syne:wght@500;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet CSS for Interactive Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  
+  <!-- Main Luxury Editorial Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Global High-Resolution Background Layer -->
+  <div class="site-global-bg-layer" id="globalBgLayer"></div>
+
+  <!-- ==================== SITE HEADER ==================== -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand-wrapper">
+        <a href="#" class="brand-logo" id="navLogoBtn">
+          CHEREVICHKA<span class="dot">.</span>
+        </a>
+        <span class="brand-tagline" id="txtBrandTagline">Insider Fashion & Vintage Guide</span>
+      </div>
+
+      <!-- Main Clean Navigation -->
+      <nav class="main-nav" id="mainNav">
+        <button class="nav-tab-btn active" data-page="home" id="navTabHome">Home</button>
+        <button class="nav-tab-btn" data-page="directory" id="navTabDirectory">The Directory</button>
+        <button class="nav-tab-btn" id="navTabTours">Walking Crawls</button>
+        <button class="nav-tab-btn" id="navTabSurvival">Tourist Guide</button>
+      </nav>
+
+      <!-- Language Switcher (EN / RU / ZH) & Actions -->
+      <div class="header-actions">
+        <!-- Language Switcher -->
+        <nav class="lang-switcher" id="langSwitcher" aria-label="Language Selector">
+          <button class="lang-btn active" data-lang="en">EN</button>
+          <button class="lang-btn" data-lang="ru">RU</button>
+          <button class="lang-btn" data-lang="zh">中文</button>
+        </nav>
+
+        <!-- Saved Favorites -->
+        <button class="icon-btn" id="openFavoritesBtn" title="Saved Spots">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <span class="badge-count" id="favoritesCount">0</span>
+        </button>
+
+        <!-- Submit Spot B2B -->
+        <button class="nav-link-btn accent-cta" id="openSubmitBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span id="txtSubmitSpot">Submit Spot</span>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button class="icon-btn" id="themeToggleBtn" title="Toggle Theme">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       PAGE 1: EDITORIAL HOME LANDING (THE ESSENCE & STORY)
+       ========================================================================== -->
+  <div class="page-view active-page" id="pageHome">
+    
+    <!-- Hero Editorial Cover -->
+    <section class="editorial-hero" id="heroSection">
+      <div class="hero-overlay-custom" id="heroOverlayCustom"></div>
+      <div class="hero-content-relative">
+        <div class="hero-pill-badge">
+          <span>●</span> <span id="txtHeroBadge">Editorial Selection 2026</span>
+        </div>
+        <h1 class="editorial-hero-title" id="txtHeroTitle">
+          The Hidden Wardrobes of Moscow & St. Petersburg.
+        </h1>
+        <p class="editorial-hero-subtitle" id="txtHeroSubtitle">
+          A luxury insider guide to secretive vintage archives, indie tailors, and avant-garde designers. Curated for international collectors and discerning travelers.
+        </p>
+
+        <div class="hero-cta-actions">
+          <button class="btn-hero-primary" id="heroExploreDirBtn">
+            <span id="txtHeroCtaExplore">Explore Global Directory →</span>
+          </button>
+          <button class="btn-hero-secondary" data-goto-city="russia">
+            <span>🇷🇺</span> <span id="txtHeroCtaRussia">Russia (MSK·SPB)</span>
+          </button>
+          <button class="btn-hero-secondary" data-goto-city="japan">
+            <span>🇯🇵</span> <span id="txtHeroCtaJapan">Japan (Tokyo·Kyoto)</span>
+          </button>
+          <button class="btn-hero-secondary" data-goto-city="bali">
+            <span>🌴</span> <span id="txtHeroCtaBali">Bali (Canggu·Seminyak)</span>
+          </button>
+          <button class="btn-hero-secondary" data-goto-city="uae">
+            <span>✨</span> <span id="txtHeroCtaDubai">UAE (Dubai)</span>
+          </button>
+          <button class="btn-hero-secondary" data-goto-city="thailand">
+            <span>🇹🇭</span> <span id="txtHeroCtaThai">Thailand (Bangkok)</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Prada-Style Category Showcase Modules -->
+    <section class="prada-categories-section">
+      <div class="section-header-center" style="margin-bottom: 3.5rem;">
+        <span class="section-tag" id="txtPillarsTag">Curated Disciplines</span>
+        <h2 class="section-title" id="txtPillarsTitle">Enter the Directory by Theme</h2>
+        <p class="section-subtitle" id="txtPillarsSub">Select a discipline to unlock secret addresses and curator reviews.</p>
+      </div>
+
+      <div class="prada-categories-grid">
+        
+        <!-- 1. Clothing -->
+        <div class="prada-category-card" data-goto-category="clothing">
+          <img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1600&q=85" id="imgPillarClothing" alt="Clothing" loading="lazy">
+          <div class="prada-cat-overlay"></div>
+          <div class="prada-cat-content">
+            <span class="prada-cat-tag">01 • THEME</span>
+            <h3 class="prada-cat-title" id="txtPillarClothingTitle">Clothing</h3>
+            <p class="prada-cat-desc" id="txtPillarClothingDesc">Runway archives, Soviet leather, Japanese denim & avant-garde tailoring.</p>
+            <span class="prada-cat-link"><span id="txtPillarEnter1">Explore Category</span> →</span>
+          </div>
+        </div>
+
+        <!-- 2. Shoes & Bags -->
+        <div class="prada-category-card" data-goto-category="shoes-bags">
+          <img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=1600&q=85" id="imgPillarShoes" alt="Shoes & Bags" loading="lazy">
+          <div class="prada-cat-overlay"></div>
+          <div class="prada-cat-content">
+            <span class="prada-cat-tag">02 • THEME</span>
+            <h3 class="prada-cat-title" id="txtPillarShoesTitle">Shoes & Bags</h3>
+            <p class="prada-cat-desc" id="txtPillarShoesDesc">Margiela Tabi, authenticated vintage Hermès & handcrafted leather footwear.</p>
+            <span class="prada-cat-link"><span id="txtPillarEnter2">Explore Category</span> →</span>
+          </div>
+        </div>
+
+        <!-- 3. Vintage Archives -->
+        <div class="prada-category-card" data-goto-category="vintage-archive">
+          <img src="https://images.unsplash.com/photo-1520006403909-838d6b92c22e?auto=format&fit=crop&w=1600&q=85" id="imgPillarVintage" alt="Vintage Archives" loading="lazy">
+          <div class="prada-cat-overlay"></div>
+          <div class="prada-cat-content">
+            <span class="prada-cat-tag">03 • THEME</span>
+            <h3 class="prada-cat-title" id="txtPillarVintageTitle">Vintage Archives</h3>
+            <p class="prada-cat-desc" id="txtPillarVintageDesc">Soviet flight jackets, rare 70s-90s band tees & pre-loved couture.</p>
+            <span class="prada-cat-link"><span id="txtPillarEnter3">Explore Category</span> →</span>
+          </div>
+        </div>
+
+        <!-- 4. Jewelry & Accs -->
+        <div class="prada-category-card" data-goto-category="jewelry-accs">
+          <img src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1600&q=85" id="imgPillarJewelry" alt="Jewelry & Accessories" loading="lazy">
+          <div class="prada-cat-overlay"></div>
+          <div class="prada-cat-content">
+            <span class="prada-cat-tag">04 • THEME</span>
+            <h3 class="prada-cat-title" id="txtPillarJewelryTitle">Jewelry & Accs</h3>
+            <p class="prada-cat-desc" id="txtPillarJewelryDesc">50s Dior costume bijoux, Dubai fine jewelry & Balinese artisan silver.</p>
+            <span class="prada-cat-link"><span id="txtPillarEnter4">Explore Category</span> →</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Manifesto & Concept Section -->
+    <section class="manifesto-section" id="manifestoSection">
+      <div class="manifesto-overlay-custom" id="manifestoOverlayCustom"></div>
+      <div class="manifesto-inner">
+        <div>
+          <span class="section-tag" id="txtManifestoTag">The Concept</span>
+          <h2 class="manifesto-quote" id="txtManifestoTitle">
+            Behind the Closed Arches of Russia's Fashion Capitals.
+          </h2>
+          <div class="manifesto-stats-row">
+            <div>
+              <div class="m-stat-num">8+</div>
+              <div class="m-stat-lbl" id="txtMStat1">Hand-curated hidden spots</div>
+            </div>
+            <div>
+              <div class="m-stat-num">2</div>
+              <div class="m-stat-lbl" id="txtMStat2">Fashion capitals covered</div>
+            </div>
+            <div>
+              <div class="m-stat-num">100%</div>
+              <div class="m-stat-lbl" id="txtMStat3">Direct founder perks</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="manifesto-text-block">
+          <p id="txtManifestoP1">
+            Russia's most extraordinary fashion isn't in shopping malls or commercial avenues. It breathes in hidden pre-revolutionary courtyards, subterranean lofts, and discreet ateliers without street signs.
+          </p>
+          <p id="txtManifestoP2">
+            Cherevichka unlocks the doors: exact courtyard passcodes, direct Cyrillic addresses for Yandex Go taxis, and exclusive tourist discount privileges directly with founders.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Spotlight Section (Curator's Highlights) -->
+    <section class="spotlight-section">
+      <div class="section-header-center">
+        <span class="section-tag" id="txtSpotlightTag">Editor's Spotlight</span>
+        <h2 class="section-title" id="txtSpotlightTitle">Curator's Top Highlights</h2>
+      </div>
+
+      <div class="spotlight-grid" id="spotlightGridContainer">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div class="spotlight-center-cta">
+        <button class="btn-hero-primary" id="spotlightViewAllBtn">
+          <span id="txtSpotlightCta">View All Spots in Directory →</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- How It Works 3-Step Guide -->
+    <section class="how-section">
+      <div class="section-header-center">
+        <span class="section-tag">Experience</span>
+        <h2 class="section-title" id="txtHowTitle">The Insider Experience</h2>
+      </div>
+
+      <div class="how-steps-grid">
+        <div class="step-card">
+          <span class="step-number">01</span>
+          <h3 class="step-title" id="txtStep1Title">1. Pick Category & City</h3>
+          <p class="step-desc" id="txtStep1Desc">Browse by Clothing, Footwear, Vintage Archives, or Jewelry in Moscow & SPB.</p>
+        </div>
+
+        <div class="step-card">
+          <span class="step-number">02</span>
+          <h3 class="step-title" id="txtStep2Title">2. Unlock Passcodes & Taxi</h3>
+          <p class="step-desc" id="txtStep2Desc">Get secret entrance gate codes and 1-click Cyrillic address for Yandex Go.</p>
+        </div>
+
+        <div class="step-card">
+          <span class="step-number">03</span>
+          <h3 class="step-title" id="txtStep3Title">3. Claim Founder Perks</h3>
+          <p class="step-desc" id="txtStep3Desc">Show your guide screen in-store for exclusive discounts and collector gifts.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+
+  <!-- ==========================================================================
+       PAGE 2: DEDICATED DIRECTORY & MAP VIEW
+       ========================================================================== -->
+  <div class="page-view" id="pageDirectory">
+    
+    <!-- Directory Page Header -->
+    <section class="directory-page-header">
+      <div class="directory-header-inner">
+        <div>
+          <h1 class="directory-title" id="txtDirHeaderTitle">The Curated Directory</h1>
+          <p class="directory-subtitle" id="txtDirHeaderSub">Interactive map, courtyard coordinates, and direct founder perks.</p>
+        </div>
+        <div class="city-filters-inline" id="dirCitySwitcher">
+          <button class="city-btn active" data-city="all" id="btnCityAll">All Destinations</button>
+          <button class="city-btn" data-city="russia" id="btnCityRussia">🇷🇺 Russia (MSK·SPB)</button>
+          <button class="city-btn" data-city="japan" id="btnCityJapan">🇯🇵 Japan</button>
+          <button class="city-btn" data-city="uae" id="btnCityUae">✨ UAE (Dubai)</button>
+          <button class="city-btn" data-city="bali" id="btnCityBali">🌴 Bali</button>
+          <button class="city-btn" data-city="thailand" id="btnCityThai">🇹🇭 Thailand</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sticky Filter Bar for Directory -->
+    <div class="filter-bar-sticky">
+      <div class="filter-inner">
+        
+        <!-- Primary Disciplines Bar -->
+        <div class="primary-disciplines-bar" id="primaryCategoryTabs">
+          <button class="discipline-tab active" data-category="all">
+            <span class="discipline-icon">✦</span>
+            <span id="tabCatAll">All Themes</span>
+          </button>
+          <button class="discipline-tab" data-category="clothing">
+            <span class="discipline-icon">🧥</span>
+            <span id="tabCatClothing">Clothing</span>
+          </button>
+          <button class="discipline-tab" data-category="shoes-bags">
+            <span class="discipline-icon">👢</span>
+            <span id="tabCatShoesBags">Shoes & Bags</span>
+          </button>
+          <button class="discipline-tab" data-category="vintage-archive">
+            <span class="discipline-icon">📻</span>
+            <span id="tabCatVintage">Vintage Archives</span>
+          </button>
+          <button class="discipline-tab" data-category="jewelry-accs">
+            <span class="discipline-icon">💍</span>
+            <span id="tabCatJewelry">Jewelry & Accs</span>
+          </button>
+        </div>
+
+        <!-- Secondary Row: Search, Styles, Price, View Toggle -->
+        <div class="filter-row-secondary">
+          
+          <div class="search-box">
+            <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search by store, brand, or district...">
+          </div>
+
+          <!-- Style Filter Chips -->
+          <div class="styles-scroll" id="styleChips">
+            <button class="style-chip active" data-style="all" id="chipStyleAll">All Styles</button>
+            <button class="style-chip" data-style="runway-archive" id="chipStyleRunway">✨ Runway & Archive</button>
+            <button class="style-chip" data-style="minimal-oldmoney" id="chipStyleMinimal">🍸 Minimal & Old Money</button>
+            <button class="style-chip" data-style="soviet-heritage" id="chipStyleSoviet">📻 Soviet 80s-90s</button>
+            <button class="style-chip" data-style="avantgarde-upcycle" id="chipStyleAvantgarde">✂️ Avant-Garde & Upcycle</button>
+            <button class="style-chip" data-style="streetwear-y2k" id="chipStyleStreetwear">🛹 Underground & Y2K</button>
+          </div>
+
+          <!-- Price Filters -->
+          <div class="price-filters" id="priceFilters">
+            <button class="price-btn active" data-price="all">ALL</button>
+            <button class="price-btn" data-price="$">$</button>
+            <button class="price-btn" data-price="$$">$$</button>
+            <button class="price-btn" data-price="$$$">$$$</button>
+          </div>
+
+          <!-- View Switcher (Split / Grid / Map) -->
+          <div class="view-toggle-group" id="viewSwitcher">
+            <button class="view-toggle-btn active" data-view="split" id="btnViewSplit" title="Split Map & List">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+              <span id="txtViewSplit">Split</span>
+            </button>
+            <button class="view-toggle-btn" data-view="grid" id="btnViewGrid" title="Cards Grid Only">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              <span id="txtViewGrid">Grid</span>
+            </button>
+            <button class="view-toggle-btn" data-view="map" id="btnViewMap" title="Interactive Map Only">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+              <span id="txtViewMap">Map</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Main Content Layout (Cards + Map) -->
+    <main class="app-main-layout">
+      <div class="layout-split" id="mainLayoutContainer">
+        
+        <!-- Cards List Pane -->
+        <div class="cards-pane">
+          <div class="results-summary-bar">
+            <span class="results-count" id="resultsCountText">Showing <strong>8</strong> locations</span>
+          </div>
+
+          <div class="cards-grid" id="spotsGrid">
+            <!-- Rendered by app.js -->
+          </div>
+        </div>
+
+        <!-- Sticky Leaflet Map Pane -->
+        <div class="map-pane-sticky">
+          <div id="leafletMap"></div>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+
+  <!-- ==================== SPOT DETAIL DRAWER ==================== -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <aside class="spot-drawer" id="spotDrawer" aria-hidden="true">
+    <div class="drawer-header">
+      <span class="badge-pill" id="drawerCategoryPill">Archive Fashion</span>
+      <button class="drawer-close-btn" id="drawerCloseBtn" aria-label="Close details">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="drawer-body" id="drawerBody"></div>
+  </aside>
+
+  <!-- ==================== WALKING TOURS MODAL ==================== -->
+  <div class="modal-dialog-overlay" id="toursModal">
+    <div class="modal-content-card">
+      <div class="modal-header">
+        <h2 class="modal-title font-serif" id="txtModalToursTitle">Curated Walking Crawls</h2>
+        <button class="drawer-close-btn close-modal-btn" data-modal="toursModal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="toursListContainer"></div>
+    </div>
+  </div>
+
+  <!-- ==================== TOURIST SURVIVAL GUIDE MODAL ==================== -->
+  <div class="modal-dialog-overlay" id="survivalModal">
+    <div class="modal-content-card">
+      <div class="modal-header">
+        <h2 class="modal-title font-serif" id="txtModalSurvivalTitle">Traveler Guide & Phrases</h2>
+        <button class="drawer-close-btn close-modal-btn" data-modal="survivalModal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <!-- Country-specific Selector Tabs -->
+      <div class="survival-country-tabs" id="survivalCountryTabs">
+        <!-- Rendered by app.js -->
+      </div>
+      <div class="modal-body" id="survivalListContainer"></div>
+    </div>
+  </div>
+
+  <!-- ==================== SUBMIT SPOT / B2B MODAL ($10 LISTING) ==================== -->
+  <div class="modal-dialog-overlay" id="submitModal">
+    <div class="modal-content-card">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title font-serif" id="txtModalSubmitTitle">List Your Brand / Store ($10/month)</h2>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.2rem;" id="txtModalSubmitSub">Affordable global promotion: reach high-spending international travelers, fashion curators, and expat nomads for only $10.</p>
+        </div>
+        <button class="drawer-close-btn close-modal-btn" data-modal="submitModal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <form class="modal-body" id="submitSpotForm">
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label" for="storeName" id="lblStoreName">Store / Brand Name *</label>
+            <input type="text" id="storeName" class="form-input" placeholder="e.g. Vintage Vault" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="storeEmail" id="lblStoreEmail">Your Email Address *</label>
+            <input type="email" id="storeEmail" class="form-input" placeholder="founder@yourbrand.com" required>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label" for="storeCity" id="lblStoreCity">Destination / Country *</label>
+            <select id="storeCity" class="form-select" required>
+              <option value="japan">Japan (Tokyo / Kyoto)</option>
+              <option value="uae">UAE (Dubai)</option>
+              <option value="thailand">Thailand (Bangkok)</option>
+              <option value="bali">Bali (Canggu / Seminyak / Ubud)</option>
+              <option value="other">Other Global City</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="storePrice" id="lblStorePrice">Price Level</label>
+            <select id="storePrice" class="form-select">
+              <option value="$">$ (Affordable)</option>
+              <option value="$$">$$ (Mid-Range)</option>
+              <option value="$$$">$$$ (Archival / Luxury)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="storeAddress" id="lblStoreAddress">Full Store Address *</label>
+          <input type="text" id="storeAddress" class="form-input" placeholder="e.g. 1-12 Jinnan, Shibuya, Tokyo or Jl. Batu Bolong 46, Bali" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="storeCategory" id="lblStoreCategory">Primary Theme *</label>
+          <select id="storeCategory" class="form-select" required>
+            <option value="clothing">🧥 Clothing</option>
+            <option value="shoes-bags">👢 Shoes & Bags</option>
+            <option value="vintage-archive">📻 Vintage Archives</option>
+            <option value="jewelry-accs">💍 Jewelry & Accessories</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="storeDescription" id="lblStoreDesc">What makes your space or collection unique? *</label>
+          <textarea id="storeDescription" class="form-textarea" rows="3" placeholder="Tell us about your collection, rare archival brands, or aesthetic..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="storeContact" id="lblStoreContact">Founder Contact (Telegram / WhatsApp / Phone) *</label>
+          <input type="text" id="storeContact" class="form-input" placeholder="@founder or +1..." required>
+        </div>
+
+        <button type="submit" class="btn-primary-action" id="btnSubmitSend" style="padding: 0.9rem; font-size: 0.9rem; margin-top: 0.5rem;">
+          Submit for Listing ($10/mo) →
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== SAVED FAVORITES MODAL ==================== -->
+  <div class="modal-dialog-overlay" id="favoritesModal">
+    <div class="modal-content-card">
+      <div class="modal-header">
+        <h2 class="modal-title font-serif" id="txtModalFavTitle">Saved Wardrobe Itinerary</h2>
+        <button class="drawer-close-btn close-modal-btn" data-modal="favoritesModal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="favoritesListContainer"></div>
+    </div>
+  </div>
+
+  <!-- Floating Mobile View Toggle (Map <-> List) -->
+  <button class="mobile-floating-view-toggle" id="btnMobileToggleView">
+    <span id="txtMobileToggleIcon">📍</span>
+    <span id="txtMobileToggleText">Show Map</span>
+  </button>
+
+  <!-- ==================== TOAST CONTAINER ==================== -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ==================== SITE FOOTER ==================== -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <h3 class="footer-brand-title">CHEREVICHKA.</h3>
+        <p style="color: var(--text-secondary); max-width: 440px; margin-top: 0.5rem; font-size: 0.9rem;" id="txtFooterAbout">
+          The independent luxury guide to archival fashion, niche jewelry, and secret ateliers across Japan, UAE, Thailand, and Bali. Curated for international explorers.
+        </p>
+      </div>
+      <div>
+        <h4 class="footer-col-title" id="txtFooterExpansion">Global Hubs</h4>
+        <div class="footer-links">
+          <a href="#" data-footer-city="japan" id="linkFooterJapan">Japan (Tokyo·Kyoto)</a>
+          <a href="#" data-footer-city="uae" id="linkFooterUae">UAE (Dubai)</a>
+          <a href="#" data-footer-city="thailand" id="linkFooterThai">Thailand (Bangkok)</a>
+          <a href="#" data-footer-city="bali" id="linkFooterBali">Bali (Canggu·Seminyak)</a>
+        </div>
+      </div>
+      <div>
+        <h4 class="footer-col-title" id="txtFooterPartners">Partners & Press</h4>
+        <div class="footer-links">
+          <a href="#" id="footerSubmitLink">Submit Your Brand ($10/mo)</a>
+          <a href="#" id="footerAdvertiseLink">Affordable $10 Listing Program</a>
+          <a href="mailto:curator@cherevichka.com">curator@cherevichka.com</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span id="txtFooterRights">© 2026 CHEREVICHKA. All rights reserved.</span>
+      <div style="display: flex; gap: 1.2rem; align-items: center;">
+        <span>Handcrafted with passion for global fashion heritage.</span>
+        <a href="admin.html" style="color: var(--text-muted); opacity: 0.6; text-decoration: underline;" title="Founder Studio Control Center">⚙️ Studio Access</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <!-- Main Application Logic with Seamless Navigation -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>

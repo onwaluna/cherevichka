@@ -1,0 +1,12 @@
+# Temporary / test files
+check_dom.py
+check_admin_dom.py
+verify_admin.py
+*.pyc
+__pycache__/
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

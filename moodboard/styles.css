@@ -1,0 +1,579 @@
+/* ==========================================================================
+   CHEREVICHKA — BRAND DESIGN MOODBOARD STYLESHEET
+   Key Palette: #858248 • #937C91 • #D7CFBE • #491B12 • Antique Gold & Animal Print
+   ========================================================================== */
+
+:root {
+  /* Brand Moodboard Primary Palette */
+  --c-olive-brass: #858248;      /* Vintage Moss / Old Brass */
+  --c-dusty-amethyst: #937C91;   /* Muted Lilac Plum / Velvet Amethyst */
+  --c-parchment-bone: #D7CFBE;   /* Raw Silk / Warm Bone */
+  --c-deep-mahogany: #491B12;    /* Dark Terracotta Wine / Deep Mahogany */
+  
+  /* Accent Metallic & Neutrals */
+  --c-burnished-gold: #C5A059;   /* Antique Gold Leaf */
+  --c-burnished-gold-light: #E8CA83;
+  --c-charcoal-noir: #151312;    /* Zebra Noir */
+  --c-pure-cream: #FAF8F2;       /* Warm Studio Cream */
+  
+  --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Space Mono', monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+
+  --shadow-card: 0 10px 30px rgba(73, 27, 18, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-hover: 0 20px 48px rgba(73, 27, 18, 0.16);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--c-pure-cream);
+  color: var(--c-charcoal-noir);
+  line-height: 1.55;
+  overflow-x: hidden;
+}
+
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+/* Top Navigation Bar */
+.mood-header-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: rgba(250, 248, 242, 0.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(215, 207, 190, 0.7);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand-title {
+  font-family: var(--font-serif);
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--c-deep-mahogany);
+}
+
+.header-links {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.btn-nav-action {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--c-parchment-bone);
+  background-color: #FFFFFF;
+  color: var(--c-charcoal-noir);
+  transition: all 0.2s ease;
+}
+
+.btn-nav-action:hover {
+  background-color: var(--c-deep-mahogany);
+  color: #FFFFFF;
+  border-color: var(--c-deep-mahogany);
+}
+
+/* ==========================================================================
+   HERO PRESENTATION
+   ========================================================================== */
+
+.mood-hero {
+  padding: 4.5rem 2rem 3rem;
+  max-width: 1440px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.mood-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.9rem;
+  background-color: rgba(133, 130, 72, 0.12);
+  color: var(--c-olive-brass);
+  border: 1px solid var(--c-olive-brass);
+  border-radius: 999px;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
+
+.mood-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.8rem, 5.2vw, 4.8rem);
+  font-weight: 600;
+  line-height: 1.05;
+  color: var(--c-deep-mahogany);
+  letter-spacing: -0.01em;
+  max-width: 1100px;
+  margin: 0 auto 1.2rem;
+}
+
+.mood-title em {
+  font-style: italic;
+  color: var(--c-olive-brass);
+}
+
+.mood-subtitle {
+  font-size: 1.15rem;
+  color: #615951;
+  max-width: 760px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ==========================================================================
+   COLOR PALETTE SHOWCASE
+   ========================================================================== */
+
+.palette-section {
+  max-width: 1440px;
+  margin: 3.5rem auto 5rem;
+  padding: 0 2rem;
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--c-olive-brass);
+  margin-bottom: 0.4rem;
+  display: block;
+}
+
+.section-heading {
+  font-family: var(--font-serif);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--c-deep-mahogany);
+  margin-bottom: 2rem;
+}
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.4rem;
+}
+
+.swatch-card {
+  background-color: #FFFFFF;
+  border: 1px solid var(--c-parchment-bone);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.swatch-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-hover);
+}
+
+.swatch-color-box {
+  height: 140px;
+  width: 100%;
+  position: relative;
+  transition: opacity 0.2s ease;
+}
+
+.swatch-copy-hint {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  color: #FFFFFF;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.swatch-card:hover .swatch-copy-hint {
+  opacity: 1;
+}
+
+.swatch-details {
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.swatch-hex {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--c-charcoal-noir);
+}
+
+.swatch-name {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--c-deep-mahogany);
+}
+
+.swatch-desc {
+  font-size: 0.78rem;
+  color: #7A7268;
+  line-height: 1.4;
+  margin-top: 0.2rem;
+}
+
+/* ==========================================================================
+   EDITORIAL MASONRY GALLERY (HIGH-RES CURATION)
+   ========================================================================== */
+
+.gallery-section {
+  max-width: 1440px;
+  margin: 5rem auto;
+  padding: 0 2rem;
+}
+
+.masonry-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1.5rem;
+  grid-auto-flow: dense;
+}
+
+.gallery-card {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background-color: var(--c-parchment-bone);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+  cursor: pointer;
+}
+
+.gallery-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: var(--shadow-hover);
+}
+
+.gallery-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gallery-card:hover img {
+  transform: scale(1.06);
+}
+
+.gallery-card-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  background-color: rgba(21, 19, 18, 0.82);
+  color: #FFFFFF;
+  backdrop-filter: blur(8px);
+  z-index: 2;
+}
+
+.gallery-card-badge.gold {
+  background-color: var(--c-burnished-gold);
+  color: #151312;
+}
+
+.gallery-card-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem 1.2rem 1rem;
+  background: linear-gradient(to top, rgba(21, 19, 18, 0.9) 0%, transparent 100%);
+  color: #FFFFFF;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.gallery-card:hover .gallery-card-caption {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.caption-title {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.caption-meta {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--c-parchment-bone);
+}
+
+/* Asymmetric Grid Spans */
+.col-span-8 { grid-column: span 8; height: 480px; }
+.col-span-4 { grid-column: span 4; height: 480px; }
+.col-span-6 { grid-column: span 6; height: 400px; }
+.col-span-3 { grid-column: span 3; height: 320px; }
+.col-span-12 { grid-column: span 12; height: 420px; }
+
+@media (max-width: 1024px) {
+  .col-span-8, .col-span-4, .col-span-6, .col-span-3 { grid-column: span 6; height: 340px; }
+}
+
+@media (max-width: 640px) {
+  .masonry-grid { grid-template-columns: 1fr; }
+  .col-span-8, .col-span-4, .col-span-6, .col-span-3, .col-span-12 { grid-column: span 1; height: 300px; }
+}
+
+/* ==========================================================================
+   TACTILE TEXTURES & ANIMAL PRINT SPREAD
+   ========================================================================== */
+
+.textures-section {
+  background-color: var(--c-parchment-bone);
+  border-top: 1px solid rgba(133, 130, 72, 0.3);
+  border-bottom: 1px solid rgba(133, 130, 72, 0.3);
+  padding: 5rem 2rem;
+}
+
+.textures-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.textures-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.texture-card {
+  background-color: #FFFFFF;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+}
+
+.texture-img-wrap {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.texture-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.texture-card:hover .texture-img-wrap img {
+  transform: scale(1.08);
+}
+
+.texture-body {
+  padding: 1.3rem;
+}
+
+.texture-title {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--c-deep-mahogany);
+}
+
+.texture-desc {
+  font-size: 0.85rem;
+  color: #635C53;
+  margin-top: 0.3rem;
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   BRAND MANIFESTO & IDENTITY SPECIMEN
+   ========================================================================== */
+
+.identity-section {
+  max-width: 1440px;
+  margin: 6rem auto;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.manifesto-quote-large {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 3.8vw, 3.2rem);
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--c-deep-mahogany);
+}
+
+.manifesto-quote-large span.gold {
+  color: var(--c-burnished-gold);
+}
+
+.typography-specimen {
+  background-color: #FFFFFF;
+  border: 1px solid var(--c-parchment-bone);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.spec-item {
+  border-bottom: 1px dashed var(--c-parchment-bone);
+  padding-bottom: 1rem;
+}
+.spec-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.spec-font-name {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: var(--c-olive-brass);
+  font-weight: 700;
+}
+
+.spec-sample {
+  font-size: 1.6rem;
+  margin-top: 0.2rem;
+  color: var(--c-charcoal-noir);
+}
+
+@media (max-width: 900px) {
+  .identity-section {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+}
+
+/* Toast */
+.mood-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background-color: var(--c-deep-mahogany);
+  color: #FFFFFF;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.75rem 1.4rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-hover);
+  border: 1px solid var(--c-burnished-gold);
+  z-index: 99999;
+  animation: toastIn 0.3s ease-out;
+}
+
+@keyframes toastIn {
+  from { transform: translateY(16px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Lightbox Modal */
+.lightbox-modal {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(21, 19, 18, 0.95);
+  backdrop-filter: blur(12px);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.lightbox-modal.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.lightbox-img {
+  max-width: 92vw;
+  max-height: 90vh;
+  border-radius: var(--radius-md);
+  object-fit: contain;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(215, 207, 190, 0.3);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  color: #FFFFFF;
+  font-size: 2rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: background-color 0.2s ease;
+}
+
+.lightbox-close:hover {
+  background-color: var(--c-deep-mahogany);
+}
+
+/* Footer */
+.mood-footer {
+  text-align: center;
+  padding: 3rem 2rem;
+  border-top: 1px solid var(--c-parchment-bone);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: #7A7268;
+}
