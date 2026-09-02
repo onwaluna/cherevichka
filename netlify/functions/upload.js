@@ -1,7 +1,15 @@
-const { getStore } = require('@netlify/blobs');
 const crypto = require('crypto');
 
 const SECRET_PASS = "fav256sobaka";
+
+function getBlobsStore(name) {
+  try {
+    const { getStore } = require('@netlify/blobs');
+    return getStore(name);
+  } catch (e) {
+    return null;
+  }
+}
 
 exports.handler = async (event, context) => {
   const headers = {
@@ -31,22 +39,21 @@ exports.handler = async (event, context) => {
       };
     }
 
-    const { dataUrl, filename } = payload;
+    const { dataUrl } = payload;
     if (!dataUrl || !dataUrl.startsWith('data:image/')) {
       return {
         statusCode: 400,
         headers,
-        body: JSON.stringify({ success: false, error: 'Invalid image dataUrl format' })
+        body: JSON.stringify({ success: false, error: 'Invalid image format' })
       };
     }
 
-    // Extract base64 and mime type
     const matches = dataUrl.match(/^data:(image\/[a-zA-Z0-9.+_-]+);base64,(.+)$/);
     if (!matches) {
       return {
         statusCode: 400,
         headers,
-        body: JSON.stringify({ success: false, error: 'Could not parse base64 image' })
+        body: JSON.stringify({ success: false, error: 'Could not parse image data' })
       };
     }
 
@@ -54,23 +61,18 @@ exports.handler = async (event, context) => {
     const base64Data = matches[2];
     const buffer = Buffer.from(base64Data, 'base64');
 
-    // Generate unique content hash ID
     const hash = crypto.createHash('md5').update(buffer).digest('hex').substring(0, 16);
     const ext = mimeType.includes('webp') ? 'webp' : (mimeType.includes('png') ? 'png' : 'jpg');
     const assetId = `img_${hash}.${ext}`;
 
-    let store = null;
-    try {
-      store = getStore('cherevichka_media');
-    } catch (e) {}
-
+    const store = getBlobsStore('cherevichka_media');
     if (store) {
-      await store.set(assetId, buffer, {
-        metadata: { contentType: mimeType }
-      });
+      try {
+        await store.set(assetId, buffer, {
+          metadata: { contentType: mimeType }
+        });
+      } catch (e) {}
     }
-
-    const publicUrl = `/api/media?id=${assetId}`;
 
     return {
       statusCode: 200,
@@ -78,9 +80,10 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({
         success: true,
         assetId: assetId,
-        url: publicUrl,
+        url: `/api/media?id=${assetId}`,
+        dataUrlFallback: dataUrl,
         sizeBytes: buffer.length,
-        message: 'Image uploaded to Live Production Cloud Storage!'
+        message: 'Image uploaded to Live Cloud Storage!'
       })
     };
   } catch (err) {

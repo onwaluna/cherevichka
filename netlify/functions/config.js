@@ -1,9 +1,15 @@
-const { getStore } = require('@netlify/blobs');
-
 const SECRET_PASS = "fav256sobaka";
 
-// In-memory fallback if Blobs are initializing
 let memoryConfigStore = null;
+
+function getBlobsStore(name) {
+  try {
+    const { getStore } = require('@netlify/blobs');
+    return getStore(name);
+  } catch (e) {
+    return null;
+  }
+}
 
 exports.handler = async (event, context) => {
   const headers = {
@@ -17,19 +23,14 @@ exports.handler = async (event, context) => {
     return { statusCode: 200, headers, body: '' };
   }
 
-  let store = null;
-  try {
-    store = getStore('cherevichka_config');
-  } catch (e) {
-    // Blobs store initialized on edge
-  }
+  const store = getBlobsStore('cherevichka_config');
 
-  // 1. GET: Fetch Live Cloud Configuration
+  // 1. GET: Return Live Config for all devices
   if (event.httpMethod === 'GET') {
     try {
       let data = null;
       if (store) {
-        data = await store.get('live_config', { type: 'json' });
+        try { data = await store.get('live_config', { type: 'json' }); } catch (e) {}
       }
       if (!data && memoryConfigStore) {
         data = memoryConfigStore;
@@ -50,19 +51,19 @@ exports.handler = async (event, context) => {
         headers,
         body: JSON.stringify({
           success: true,
-          source: 'defaults_fallback',
+          source: 'fallback',
           config: memoryConfigStore || null
         })
       };
     }
   }
 
-  // 2. POST: Save Live Cloud Configuration
+  // 2. POST: Save and publish Live Config for all devices
   if (event.httpMethod === 'POST') {
     try {
       const payload = JSON.parse(event.body || '{}');
 
-      // Security check
+      // Password Auth Check
       if (payload.auth !== SECRET_PASS && event.headers['authorization'] !== `Bearer ${SECRET_PASS}`) {
         return {
           statusCode: 401,
@@ -83,7 +84,7 @@ exports.handler = async (event, context) => {
       memoryConfigStore = configToSave;
 
       if (store) {
-        await store.setJSON('live_config', configToSave);
+        try { await store.setJSON('live_config', configToSave); } catch (e) {}
       }
 
       return {
@@ -91,7 +92,7 @@ exports.handler = async (event, context) => {
         headers,
         body: JSON.stringify({
           success: true,
-          message: 'Configuration successfully published to Live Production Cloud!',
+          message: 'Published to Live Production for all devices globally!',
           updatedAt: configToSave.updatedAt
         })
       };

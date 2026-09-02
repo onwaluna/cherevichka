@@ -1,0 +1,13 @@
+{
+  "name": "cherevichka",
+  "version": "1.0.0",
+  "description": "CHEREVICHKA - Luxury Insider Fashion & Archive Directory",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'Build complete'"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^8.0.0",
+    "@netlify/functions": "^2.8.2"
+  }
+}
