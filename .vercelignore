@@ -1,6 +1,7 @@
-лендинг дизайн/
 *.py
 *.bat
+*.mp4
 check_dom.py
 check_admin_dom.py
 verify_admin.py
+copy_assets.py
