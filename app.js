@@ -384,7 +384,6 @@ function applyLanguage(lang) {
   setText('txtSubmitSpot', t.navSubmit);
 
   // Home Hero
-  setText('txtHeroBadge', t.heroBadge);
   setHTML('txtHeroTitle', t.heroTitle);
   setText('txtHeroSubtitle', t.heroSubtitle);
   setText('txtHeroCtaExplore', t.heroCtaExplore);
@@ -392,7 +391,7 @@ function applyLanguage(lang) {
   setText('txtHeroCtaJapan', t.heroCtaJapan);
   setText('txtHeroCtaBali', t.heroCtaBali);
   setText('txtHeroCtaDubai', t.heroCtaDubai);
-  setText('txtHeroCtaThai', t.destThailand || 'Thailand (Bangkok)');
+  setText('txtHeroCtaThai', t.heroCtaThai || t.destThailand || 'Thailand');
 
   // Home Pillars
   setText('txtPillarsTag', t.pillarsTag);

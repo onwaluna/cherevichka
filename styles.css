@@ -385,36 +385,15 @@ input, textarea, select {
   margin: 0 auto;
 }
 
-.hero-pill-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  font-family: var(--font-mono);
-  font-size: 0.74rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  padding: 0.35rem 0.85rem;
-  background-color: var(--color-baby-blue-subtle);
-  color: var(--color-baby-blue-dark);
-  border: 1px solid var(--color-baby-blue);
-  border-radius: var(--radius-full);
-  margin-bottom: 1.5rem;
-  font-weight: 700;
-}
-
-[data-theme="dark"] .hero-pill-badge {
-  color: var(--color-baby-blue);
-}
-
 .editorial-hero-title {
   font-family: var(--font-serif);
-  font-size: clamp(2.8rem, 5.5vw, 5.2rem);
+  font-size: clamp(2.3rem, 4.4vw, 3.8rem);
   font-weight: 700;
-  line-height: 1.04;
+  line-height: 1.14;
   letter-spacing: -0.015em;
   color: var(--text-primary);
-  max-width: 1100px;
-  margin: 0 auto 1.4rem;
+  max-width: 960px;
+  margin: 0 auto 1.25rem;
 }
 
 .editorial-hero-title em {
@@ -424,11 +403,11 @@ input, textarea, select {
 }
 
 .editorial-hero-subtitle {
-  font-size: 1.15rem;
+  font-size: clamp(1.05rem, 1.6vw, 1.2rem);
   color: var(--text-secondary);
-  max-width: 780px;
-  margin: 0 auto 2.4rem;
-  line-height: 1.6;
+  max-width: 720px;
+  margin: 0 auto 2.2rem;
+  line-height: 1.65;
 }
 
 .hero-cta-actions {
