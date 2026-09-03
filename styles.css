@@ -92,25 +92,6 @@ body {
   color: var(--text-primary);
   line-height: 1.55;
   overflow-x: hidden;
-  transition: background-color var(--transition-smooth), color var(--transition-smooth);
-}
-
-/* Global High-Resolution Background Layer */
-.site-global-bg-layer {
-  position: fixed;
-  inset: 0;
-  z-index: -999;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  image-rendering: -webkit-optimize-contrast;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.site-global-bg-layer.active-bg {
-  opacity: 1;
 }
 
 a {

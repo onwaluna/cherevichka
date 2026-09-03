@@ -1593,10 +1593,10 @@ export const DESIGN_PANELS = {
     target: "header"
   },
   hero: {
-    bgImage: "assets/images/hero_moodboard_cover.webp",
-    overlayOpacity: 55,
-    titleColor: "#FFFFFF",
-    subtitleColor: "#E5DFC9"
+    bgImage: "",
+    overlayOpacity: 0,
+    titleColor: "#161413",
+    subtitleColor: "#57524E"
   },
   pillars: {
     clothingImg: "assets/images/052c0477-e95d-453a-b503-b84704ca66f9.webp",
@@ -1606,7 +1606,7 @@ export const DESIGN_PANELS = {
   },
   manifesto: {
     bgImage: "",
-    overlayOpacity: 20
+    overlayOpacity: 0
   }
 };
 

@@ -32,7 +32,7 @@
         {
           "test_name": "DOM ID Contract: index.html vs app.js",
           "status": "PASS",
-          "details": "All 65 IDs exist in index.html",
+          "details": "All 64 IDs exist in index.html",
           "error": "",
           "logs": []
         },

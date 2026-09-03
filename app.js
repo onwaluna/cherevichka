@@ -115,24 +115,10 @@ function applyCustomDesignPanels(overridePanels) {
   const panels = overridePanels || (cloudConfig && cloudConfig.designPanels) || safeStorage.getJSON('cherevichka_design_panels', BASE_PANELS);
   if (!panels) return;
   try {
-    // 0. Top Header Bar & Global Background Layer (Color Fill + Image)
-    const globalBgLayer = document.getElementById('globalBgLayer');
-
-    // 0.1 Color Fill Application
+    // 0. Top Header Bar Color Fill Application
     if (panels.header && panels.header.bgColor && panels.header.target === 'both') {
       document.documentElement.style.setProperty('--bg-primary', panels.header.bgColor);
       document.body.style.backgroundColor = panels.header.bgColor;
-    }
-
-    // 0.2 Global Background Layer
-    if (panels.header && panels.header.bgImage && panels.header.target === 'both') {
-      if (globalBgLayer) {
-        globalBgLayer.style.backgroundImage = `url('${panels.header.bgImage}')`;
-        globalBgLayer.classList.add('active-bg');
-      }
-    } else if (globalBgLayer) {
-      globalBgLayer.classList.remove('active-bg');
-      globalBgLayer.style.backgroundImage = '';
     }
 
     // 1. Hero background & overlay
@@ -154,7 +140,7 @@ function applyCustomDesignPanels(overridePanels) {
         heroSection.style.backgroundRepeat = h.bgFit === 'repeat' ? 'repeat' : 'no-repeat';
         heroOverlay.style.opacity = (h.overlayOpacity !== undefined ? h.overlayOpacity : 45) / 100;
       } else {
-        heroSection.style.backgroundImage = '';
+        heroSection.style.backgroundImage = 'none';
         heroOverlay.style.opacity = '0';
       }
     }

@@ -70,10 +70,10 @@ const state = {
       target: 'header'
     },
     hero: {
-      bgImage: 'assets/images/hero_moodboard_cover.webp',
-      overlayOpacity: 55,
-      titleColor: '#FFFFFF',
-      subtitleColor: '#E5DFC9'
+      bgImage: '',
+      overlayOpacity: 0,
+      titleColor: '#161413',
+      subtitleColor: '#57524E'
     },
     pillars: {
       clothingImg: 'assets/images/052c0477-e95d-453a-b503-b84704ca66f9.webp',
@@ -921,21 +921,22 @@ function initDesignPanels() {
   });
 
   document.getElementById('btnResetHeroBg').addEventListener('click', () => {
-    p.hero.bgImage = 'assets/images/hero_moodboard_cover.webp';
-    p.hero.titleColor = '#FFFFFF';
-    p.hero.subtitleColor = '#E5DFC9';
-    inpHeroBgUrl.value = p.hero.bgImage;
-    if (pickerHeroTitleColor) pickerHeroTitleColor.value = '#FFFFFF';
-    if (hexHeroTitleColor) hexHeroTitleColor.value = '#FFFFFF';
-    if (pickerHeroSubtitleColor) pickerHeroSubtitleColor.value = '#E5DFC9';
-    if (hexHeroSubtitleColor) hexHeroSubtitleColor.value = '#E5DFC9';
-    p.hero.overlayOpacity = 55;
-    rangeHeroOverlay.value = 55;
-    lblHeroOverlayVal.textContent = '55%';
-    heroPreviewBanner.style.backgroundImage = `url('${p.hero.bgImage}')`;
-    heroPreviewOverlay.style.opacity = 0.55;
+    p.hero.bgImage = '';
+    p.hero.titleColor = '#161413';
+    p.hero.subtitleColor = '#57524E';
+    inpHeroBgUrl.value = '';
+    if (pickerHeroTitleColor) pickerHeroTitleColor.value = '#161413';
+    if (hexHeroTitleColor) hexHeroTitleColor.value = '#161413';
+    if (pickerHeroSubtitleColor) pickerHeroSubtitleColor.value = '#57524E';
+    if (hexHeroSubtitleColor) hexHeroSubtitleColor.value = '#57524E';
+    p.hero.overlayOpacity = 0;
+    rangeHeroOverlay.value = 0;
+    lblHeroOverlayVal.textContent = '0%';
+    heroPreviewBanner.style.backgroundImage = 'none';
+    heroPreviewOverlay.style.opacity = 0;
     safeStorage.set('cherevichka_design_panels', state.designPanels);
-    showToast('Reset hero to luxury default');
+    publishConfigToCloud({ designPanels: state.designPanels });
+    showToast('Reset hero to clean luxury default');
   });
 
   // Pillars Covers Setup
