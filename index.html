@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
   <title>CHEREVICHKA — Luxury Global Insider Fashion & Archive Directory</title>
   <meta name="description" content="The ultimate trilingual insider guide to hidden vintage boutiques, Soviet archives, and avant-garde designers in Moscow & St. Petersburg.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👢</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.85em' font-size='80' font-family='serif' font-weight='bold' fill='%23913731'>C</text></svg>">
   
   <!-- Leaflet CSS for Interactive Map (Local Vendor - 100% Anti-Blocking) -->
   <link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css">
   
   <!-- Main Luxury Editorial Stylesheet -->
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=2.1">
 </head>
 <body>
 
@@ -49,9 +49,9 @@
         </button>
 
         <!-- Submit Spot B2B -->
-        <button class="nav-link-btn accent-cta" id="openSubmitBtn">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          <span id="txtSubmitSpot">Submit Spot</span>
+        <button class="nav-link-btn" id="openSubmitBtn" style="border: 1px solid var(--border-subtle);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span id="txtSubmitSpot">Разместить бренд</span>
         </button>
 
         <!-- Theme Toggle -->
@@ -173,16 +173,16 @@
           </h2>
           <div class="manifesto-stats-row">
             <div>
-              <div class="m-stat-num">8+</div>
-              <div class="m-stat-lbl" id="txtMStat1">Hand-curated hidden spots</div>
+              <div class="m-stat-num">16+</div>
+              <div class="m-stat-lbl" id="txtMStat1">Отобранных тайных пространств</div>
             </div>
             <div>
-              <div class="m-stat-num">2</div>
-              <div class="m-stat-lbl" id="txtMStat2">Fashion capitals covered</div>
+              <div class="m-stat-num">5</div>
+              <div class="m-stat-lbl" id="txtMStat2">Мировых направлений</div>
             </div>
             <div>
               <div class="m-stat-num">100%</div>
-              <div class="m-stat-lbl" id="txtMStat3">Direct founder perks</div>
+              <div class="m-stat-lbl" id="txtMStat3">Привилегии от основателей</div>
             </div>
           </div>
         </div>
@@ -238,8 +238,8 @@
 
         <div class="step-card">
           <span class="step-number">03</span>
-          <h3 class="step-title" id="txtStep3Title">3. Claim Founder Perks</h3>
-          <p class="step-desc" id="txtStep3Desc">Show your guide screen in-store for exclusive discounts and collector gifts.</p>
+          <h3 class="step-title" id="txtStep3Title">3. Исследуйте уникальные места</h3>
+          <p class="step-desc" id="txtStep3Desc">Находите редкие коллекции, архивные вещи и знакомьтесь с создателями локальных брендов.</p>
         </div>
       </div>
     </section>
@@ -257,7 +257,7 @@
       <div class="directory-header-inner">
         <div>
           <h1 class="directory-title" id="txtDirHeaderTitle">The Curated Directory</h1>
-          <p class="directory-subtitle" id="txtDirHeaderSub">Interactive map, courtyard coordinates, and direct founder perks.</p>
+          <p class="directory-subtitle" id="txtDirHeaderSub">Interactive map, courtyard coordinates, and curator insights.</p>
         </div>
         <div class="city-filters-inline" id="dirCitySwitcher">
           <button class="city-btn active" data-city="all" id="btnCityAll">All Destinations</button>
@@ -277,23 +277,18 @@
         <!-- Primary Disciplines Bar -->
         <div class="primary-disciplines-bar" id="primaryCategoryTabs">
           <button class="discipline-tab active" data-category="all">
-            <span class="discipline-icon">✦</span>
             <span id="tabCatAll">All Themes</span>
           </button>
           <button class="discipline-tab" data-category="clothing">
-            <span class="discipline-icon">🧥</span>
             <span id="tabCatClothing">Clothing</span>
           </button>
           <button class="discipline-tab" data-category="shoes-bags">
-            <span class="discipline-icon">👢</span>
             <span id="tabCatShoesBags">Shoes & Bags</span>
           </button>
           <button class="discipline-tab" data-category="vintage-archive">
-            <span class="discipline-icon">📻</span>
             <span id="tabCatVintage">Vintage Archives</span>
           </button>
           <button class="discipline-tab" data-category="jewelry-accs">
-            <span class="discipline-icon">💍</span>
             <span id="tabCatJewelry">Jewelry & Accs</span>
           </button>
         </div>
@@ -306,14 +301,23 @@
             <input type="text" id="searchInput" class="search-input" placeholder="Search by store, brand, or district...">
           </div>
 
-          <!-- Style Filter Chips -->
-          <div class="styles-scroll" id="styleChips">
-            <button class="style-chip active" data-style="all" id="chipStyleAll">All Styles</button>
-            <button class="style-chip" data-style="runway-archive" id="chipStyleRunway">✨ Runway & Archive</button>
-            <button class="style-chip" data-style="minimal-oldmoney" id="chipStyleMinimal">🍸 Minimal & Old Money</button>
-            <button class="style-chip" data-style="soviet-heritage" id="chipStyleSoviet">📻 Soviet 80s-90s</button>
-            <button class="style-chip" data-style="avantgarde-upcycle" id="chipStyleAvantgarde">✂️ Avant-Garde & Upcycle</button>
-            <button class="style-chip" data-style="streetwear-y2k" id="chipStyleStreetwear">🛹 Underground & Y2K</button>
+          <!-- Compact Style Dropdown / Popover -->
+          <div class="style-dropdown-container" id="styleDropdownContainer">
+            <button class="style-dropdown-trigger" id="styleDropdownBtn" type="button" aria-haspopup="listbox" aria-expanded="false">
+              <span class="style-trigger-label" id="styleTriggerLabel">Style: All</span>
+              <svg class="style-chevron-icon" id="styleChevronIcon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+              <span class="style-reset-btn" id="styleResetBtn" title="Reset Style" style="display: none;" role="button" aria-label="Reset style">✕</span>
+            </button>
+
+            <!-- Desktop Popover Menu -->
+            <div class="style-dropdown-popover" id="styleDropdownMenu" role="listbox">
+              <button class="style-menu-item active" data-style="all" id="chipStyleAll" role="option">All styles</button>
+              <button class="style-menu-item" data-style="runway-archive" id="chipStyleRunway" role="option">Runway & Archive</button>
+              <button class="style-menu-item" data-style="minimal-oldmoney" id="chipStyleMinimal" role="option">Minimal & Resort</button>
+              <button class="style-menu-item" data-style="soviet-heritage" id="chipStyleSoviet" role="option">Vintage 70s-90s</button>
+              <button class="style-menu-item" data-style="avantgarde-upcycle" id="chipStyleAvantgarde" role="option">Avant-Garde & Artisan</button>
+              <button class="style-menu-item" data-style="streetwear-y2k" id="chipStyleStreetwear" role="option">Underground & Street</button>
+            </div>
           </div>
 
           <!-- Price Filters -->
@@ -324,15 +328,15 @@
             <button class="price-btn" data-price="$$$">$$$</button>
           </div>
 
-          <!-- View Switcher (Split / Grid / Map) -->
+          <!-- View Switcher (Grid / Split / Map) -->
           <div class="view-toggle-group" id="viewSwitcher">
-            <button class="view-toggle-btn active" data-view="split" id="btnViewSplit" title="Split Map & List">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
-              <span id="txtViewSplit">Split</span>
-            </button>
-            <button class="view-toggle-btn" data-view="grid" id="btnViewGrid" title="Cards Grid Only">
+            <button class="view-toggle-btn active" data-view="grid" id="btnViewGrid" title="Lookbook Grid">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
               <span id="txtViewGrid">Grid</span>
+            </button>
+            <button class="view-toggle-btn" data-view="split" id="btnViewSplit" title="Split Map & List">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+              <span id="txtViewSplit">Split</span>
             </button>
             <button class="view-toggle-btn" data-view="map" id="btnViewMap" title="Interactive Map Only">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
@@ -347,7 +351,7 @@
 
     <!-- Main Content Layout (Cards + Map) -->
     <main class="app-main-layout">
-      <div class="layout-split" id="mainLayoutContainer">
+      <div class="layout-grid" id="mainLayoutContainer">
         
         <!-- Cards List Pane -->
         <div class="cards-pane">
@@ -420,8 +424,8 @@
     <div class="modal-content-card">
       <div class="modal-header">
         <div>
-          <h2 class="modal-title font-serif" id="txtModalSubmitTitle">List Your Brand / Store ($10/month)</h2>
-          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.2rem;" id="txtModalSubmitSub">Affordable global promotion: reach high-spending international travelers, fashion curators, and expat nomads for only $10.</p>
+          <h2 class="modal-title font-serif" id="txtModalSubmitTitle">Разместить бренд в журнале</h2>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.2rem;" id="txtModalSubmitSub">Кураторский международный гид: расскажите о своем пространстве ценителям моды, коллекционерам и путешественникам.</p>
         </div>
         <button class="drawer-close-btn close-modal-btn" data-modal="submitModal">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -430,63 +434,64 @@
       <form class="modal-body" id="submitSpotForm">
         <div class="form-row-2">
           <div class="form-group">
-            <label class="form-label" for="storeName" id="lblStoreName">Store / Brand Name *</label>
-            <input type="text" id="storeName" class="form-input" placeholder="e.g. Vintage Vault" required>
+            <label class="form-label" for="storeName" id="lblStoreName">Название бренда / магазина *</label>
+            <input type="text" id="storeName" class="form-input" placeholder="например: Strogo Vintage" required>
           </div>
           <div class="form-group">
-            <label class="form-label" for="storeEmail" id="lblStoreEmail">Your Email Address *</label>
+            <label class="form-label" for="storeEmail" id="lblStoreEmail">Контактный Email *</label>
             <input type="email" id="storeEmail" class="form-input" placeholder="founder@yourbrand.com" required>
           </div>
         </div>
 
         <div class="form-row-2">
           <div class="form-group">
-            <label class="form-label" for="storeCity" id="lblStoreCity">Destination / Country *</label>
+            <label class="form-label" for="storeCity" id="lblStoreCity">Город и страна *</label>
             <select id="storeCity" class="form-select" required>
-              <option value="japan">Japan (Tokyo / Kyoto)</option>
-              <option value="uae">UAE (Dubai)</option>
-              <option value="thailand">Thailand (Bangkok)</option>
-              <option value="bali">Bali (Canggu / Seminyak / Ubud)</option>
-              <option value="other">Other Global City</option>
+              <option value="russia">Россия (Москва / СПб)</option>
+              <option value="japan">Япония (Токио / Киото)</option>
+              <option value="uae">ОАЭ (Дубай)</option>
+              <option value="thailand">Таиланд (Бангкок)</option>
+              <option value="bali">Бали (Чангу / Семиньяк / Убуд)</option>
+              <option value="other">Другой город</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label" for="storePrice" id="lblStorePrice">Price Level</label>
+            <label class="form-label" for="storePrice" id="lblStorePrice">Ценовой уровень</label>
             <select id="storePrice" class="form-select">
-              <option value="$">$ (Affordable)</option>
-              <option value="$$">$$ (Mid-Range)</option>
-              <option value="$$$">$$$ (Archival / Luxury)</option>
+              <option value="$">$ (Доступный)</option>
+              <option value="$$">$$ (Средний)</option>
+              <option value="$$$">$$$ (Премиум / Архивный люкс)</option>
             </select>
           </div>
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="storeAddress" id="lblStoreAddress">Full Store Address *</label>
-          <input type="text" id="storeAddress" class="form-input" placeholder="e.g. 1-12 Jinnan, Shibuya, Tokyo or Jl. Batu Bolong 46, Bali" required>
+          <label class="form-label" for="storeAddress" id="lblStoreAddress">Полный адрес *</label>
+          <input type="text" id="storeAddress" class="form-input" placeholder="Город, улица, дом, корпус/строение" required>
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="storeCategory" id="lblStoreCategory">Primary Theme *</label>
+          <label class="form-label" for="storeCategory" id="lblStoreCategory">Основная тематика *</label>
           <select id="storeCategory" class="form-select" required>
-            <option value="clothing">🧥 Clothing</option>
-            <option value="shoes-bags">👢 Shoes & Bags</option>
-            <option value="vintage-archive">📻 Vintage Archives</option>
-            <option value="jewelry-accs">💍 Jewelry & Accessories</option>
+            <option value="clothing">Одежда (Clothing)</option>
+            <option value="shoes-bags">Обувь и сумки (Shoes & Bags)</option>
+            <option value="vintage-archive">Винтажные архивы (Vintage Archives)</option>
+            <option value="jewelry-accs">Ювелирные изделия и аксессуары (Jewelry & Accs)</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="storeDescription" id="lblStoreDesc">What makes your space or collection unique? *</label>
-          <textarea id="storeDescription" class="form-textarea" rows="3" placeholder="Tell us about your collection, rare archival brands, or aesthetic..." required></textarea>
+          <label class="form-label" for="storeDescription" id="lblStoreDesc">В чем уникальность вашей локации или коллекции? *</label>
+          <textarea id="storeDescription" class="form-textarea" rows="3" placeholder="Расскажите о концепции, редких брендах или атмосфере пространства..." required></textarea>
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="storeContact" id="lblStoreContact">Founder Contact (Telegram / WhatsApp / Phone) *</label>
-          <input type="text" id="storeContact" class="form-input" placeholder="@founder or +1..." required>
+          <label class="form-label" for="storeContact" id="lblStoreContact">Контакты основателя (Telegram / WhatsApp / Телефон) *</label>
+          <input type="text" id="storeContact" class="form-input" placeholder="@founder или +7 / +..." required>
         </div>
 
         <button type="submit" class="btn-primary-action" id="btnSubmitSend" style="padding: 0.9rem; font-size: 0.9rem; margin-top: 0.5rem;">
-          Submit for Listing ($10/mo) →
+          <span id="txtSubmitSendBtn">Подать заявку на размещение →</span>
         </button>
       </form>
     </div>
@@ -505,10 +510,49 @@
     </div>
   </div>
 
+  <!-- ==================== MOBILE STYLE BOTTOM SHEET ==================== -->
+  <div class="style-sheet-overlay" id="styleSheetOverlay">
+    <div class="style-bottom-sheet" id="styleBottomSheet" role="dialog" aria-modal="true" aria-labelledby="txtStyleSheetTitle">
+      <div class="sheet-drag-handle"></div>
+      <div class="sheet-header">
+        <h3 class="sheet-title font-serif" id="txtStyleSheetTitle">Style</h3>
+        <button class="sheet-close-btn" id="closeStyleSheetBtn" aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="sheet-body" id="styleSheetList">
+        <button class="sheet-item active" data-style="all" id="mStyleAll">
+          <span class="sheet-item-name" id="txtMStyleAll">All styles</span>
+          <span class="sheet-check-indicator">✓</span>
+        </button>
+        <button class="sheet-item" data-style="runway-archive" id="mStyleRunway">
+          <span class="sheet-item-name" id="txtMStyleRunway">Runway & Archive</span>
+          <span class="sheet-check-indicator">✓</span>
+        </button>
+        <button class="sheet-item" data-style="minimal-oldmoney" id="mStyleMinimal">
+          <span class="sheet-item-name" id="txtMStyleMinimal">Minimal & Resort</span>
+          <span class="sheet-check-indicator">✓</span>
+        </button>
+        <button class="sheet-item" data-style="soviet-heritage" id="mStyleSoviet">
+          <span class="sheet-item-name" id="txtMStyleSoviet">Vintage 70s-90s</span>
+          <span class="sheet-check-indicator">✓</span>
+        </button>
+        <button class="sheet-item" data-style="avantgarde-upcycle" id="mStyleAvantgarde">
+          <span class="sheet-item-name" id="txtMStyleAvantgarde">Avant-Garde & Artisan</span>
+          <span class="sheet-check-indicator">✓</span>
+        </button>
+        <button class="sheet-item" data-style="streetwear-y2k" id="mStyleStreetwear">
+          <span class="sheet-item-name" id="txtMStyleStreetwear">Underground & Street</span>
+          <span class="sheet-check-indicator">✓</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Floating Mobile View Toggle (Map <-> List) -->
   <button class="mobile-floating-view-toggle" id="btnMobileToggleView">
-    <span id="txtMobileToggleIcon">📍</span>
-    <span id="txtMobileToggleText">Show Map</span>
+    <span id="txtMobileToggleIcon" style="display:none;"></span>
+    <span id="txtMobileToggleText">Показать карту</span>
   </button>
 
   <!-- ==================== TOAST CONTAINER ==================== -->
@@ -526,17 +570,17 @@
       <div>
         <h4 class="footer-col-title" id="txtFooterExpansion">Global Hubs</h4>
         <div class="footer-links">
-          <a href="#" data-footer-city="japan" id="linkFooterJapan">Japan (Tokyo·Kyoto)</a>
-          <a href="#" data-footer-city="uae" id="linkFooterUae">UAE (Dubai)</a>
-          <a href="#" data-footer-city="thailand" id="linkFooterThai">Thailand (Bangkok)</a>
-          <a href="#" data-footer-city="bali" id="linkFooterBali">Bali (Canggu·Seminyak)</a>
+          <a href="#" data-footer-city="japan" id="linkFooterJapan">Japan</a>
+          <a href="#" data-footer-city="uae" id="linkFooterUae">UAE</a>
+          <a href="#" data-footer-city="thailand" id="linkFooterThai">Thailand</a>
+          <a href="#" data-footer-city="bali" id="linkFooterBali">Bali</a>
         </div>
       </div>
       <div>
         <h4 class="footer-col-title" id="txtFooterPartners">Partners & Press</h4>
         <div class="footer-links">
-          <a href="#" id="footerSubmitLink">Submit Your Brand ($10/mo)</a>
-          <a href="#" id="footerAdvertiseLink">Affordable $10 Listing Program</a>
+          <a href="#" id="footerSubmitLink">List your brand</a>
+          <a href="#" id="footerAdvertiseLink">For independent ateliers and boutiques</a>
           <a href="mailto:cherevichka.map@gmail.com">cherevichka.map@gmail.com</a>
         </div>
       </div>
@@ -550,6 +594,6 @@
   <!-- Leaflet JS (Local Vendor - 100% Anti-Blocking) -->
   <script src="assets/vendor/leaflet/leaflet.js"></script>
   <!-- Main Application Logic with Seamless Navigation -->
-  <script type="module" src="app.js"></script>
+  <script type="module" src="app.js?v=2.1"></script>
 </body>
 </html>

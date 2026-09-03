@@ -1,4 +1,4 @@
-import { I18N as BASE_I18N, SPOTS_DATA as BASE_SPOTS, WALKING_TOURS, COUNTRY_SURVIVAL_GUIDES, DESIGN_PANELS as BASE_PANELS, CUSTOM_COLORS as BASE_COLORS, CUSTOM_FONTS as BASE_FONTS } from './data/spots.js';
+import { I18N as BASE_I18N, SPOTS_DATA as BASE_SPOTS, WALKING_TOURS, COUNTRY_SURVIVAL_GUIDES, DESIGN_PANELS as BASE_PANELS, CUSTOM_COLORS as BASE_COLORS, CUSTOM_FONTS as BASE_FONTS } from './data/spots.js?v=2.1';
 
 /* ==========================================================================
    SAFE PROTOCOL-AGNOSTIC & PRIVATE-MODE STORAGE ADAPTER
@@ -189,7 +189,7 @@ const state = {
   style: 'all',    // 'all' | 'runway-archive' | 'minimal-oldmoney' | 'soviet-heritage' | 'avantgarde-upcycle' | 'streetwear-y2k'
   price: 'all',
   searchQuery: '',
-  view: 'split',   // 'split' | 'grid' | 'map'
+  view: 'grid',    // 'grid' | 'split' | 'map'
   favorites: new Set(safeStorage.getJSON('cherevichka_favs', [])),
   selectedSpotId: null,
   theme: safeStorage.get('cherevichka_theme') || 'light'
@@ -214,7 +214,14 @@ const searchInput = document.getElementById('searchInput');
 const langSwitcher = document.getElementById('langSwitcher');
 const dirCitySwitcher = document.getElementById('dirCitySwitcher');
 const primaryCategoryTabs = document.getElementById('primaryCategoryTabs');
-const styleChips = document.getElementById('styleChips');
+const styleDropdownContainer = document.getElementById('styleDropdownContainer');
+const styleDropdownBtn = document.getElementById('styleDropdownBtn');
+const styleDropdownMenu = document.getElementById('styleDropdownMenu');
+const styleTriggerLabel = document.getElementById('styleTriggerLabel');
+const styleResetBtn = document.getElementById('styleResetBtn');
+const styleChevronIcon = document.getElementById('styleChevronIcon');
+const styleSheetOverlay = document.getElementById('styleSheetOverlay');
+const closeStyleSheetBtn = document.getElementById('closeStyleSheetBtn');
 const priceFilters = document.getElementById('priceFilters');
 const viewSwitcher = document.getElementById('viewSwitcher');
 const mainLayoutContainer = document.getElementById('mainLayoutContainer');
@@ -249,6 +256,49 @@ function setHTML(id, html) {
   if (html === undefined || html === null) return;
   const el = document.getElementById(id);
   if (el) el.innerHTML = html;
+}
+
+function getStyleDisplayLabel(styleKey) {
+  const allI18n = getI18N();
+  const t = allI18n[state.lang] || allI18n.en;
+  const map = {
+    'all': t.allStylesLabel || t.allStyles || 'All styles',
+    'runway-archive': t.styleRunway || 'Runway & Archive',
+    'minimal-oldmoney': t.styleMinimal || 'Minimal & Resort',
+    'soviet-heritage': t.styleSoviet || 'Vintage 70s-90s',
+    'avantgarde-upcycle': t.styleAvantgarde || 'Avant-Garde & Artisan',
+    'streetwear-y2k': t.styleStreetwear || 'Underground & Street'
+  };
+  return map[styleKey] || styleKey;
+}
+
+function updateStyleControlUI() {
+  const allI18n = getI18N();
+  const t = allI18n[state.lang] || allI18n.en;
+  const prefix = t.stylePrefix || 'Style';
+
+  if (!styleTriggerLabel) return;
+
+  if (state.style === 'all') {
+    styleTriggerLabel.textContent = `${prefix}: ${t.allStyles || 'All'}`;
+    styleDropdownContainer?.classList.remove('has-active-style');
+    if (styleResetBtn) styleResetBtn.style.display = 'none';
+    if (styleChevronIcon) styleChevronIcon.style.display = 'inline-block';
+  } else {
+    const label = getStyleDisplayLabel(state.style);
+    styleTriggerLabel.textContent = `${prefix}: ${label}`;
+    styleDropdownContainer?.classList.add('has-active-style');
+    if (styleResetBtn) styleResetBtn.style.display = 'inline-flex';
+    if (styleChevronIcon) styleChevronIcon.style.display = 'none';
+  }
+
+  // Update active states in desktop popover and mobile sheet
+  document.querySelectorAll('.style-menu-item').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.style === state.style);
+  });
+  document.querySelectorAll('.sheet-item').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.style === state.style);
+  });
 }
 
 /* ==========================================================================
@@ -447,12 +497,25 @@ function applyLanguage(lang) {
   setText('tabCatVintage', t.catVintageArchive);
   setText('tabCatJewelry', t.catJewelryAccs);
   if (searchInput) searchInput.placeholder = t.searchPlaceholder || 'Search by store, brand...';
-  setText('chipStyleAll', t.allStyles);
+  
+  // Style Dropdown Labels
+  setText('txtStyleSheetTitle', t.stylePrefix || 'Style');
+  setText('chipStyleAll', t.allStylesLabel || t.allStyles || 'All styles');
   setText('chipStyleRunway', t.styleRunway);
   setText('chipStyleMinimal', t.styleMinimal);
   setText('chipStyleSoviet', t.styleSoviet);
   setText('chipStyleAvantgarde', t.styleAvantgarde);
   setText('chipStyleStreetwear', t.styleStreetwear);
+
+  setText('txtMStyleAll', t.allStylesLabel || t.allStyles || 'All styles');
+  setText('txtMStyleRunway', t.styleRunway);
+  setText('txtMStyleMinimal', t.styleMinimal);
+  setText('txtMStyleSoviet', t.styleSoviet);
+  setText('txtMStyleAvantgarde', t.styleAvantgarde);
+  setText('txtMStyleStreetwear', t.styleStreetwear);
+
+  updateStyleControlUI();
+
   setText('txtViewSplit', t.splitView);
   setText('txtViewGrid', t.gridView);
   setText('txtViewMap', t.mapView);
@@ -478,12 +541,15 @@ function applyLanguage(lang) {
   setText('txtFooterExpansion', t.footerExpansion);
   setText('txtFooterPartners', t.footerPartners);
   setText('txtFooterRights', t.footerRights);
+  setText('footerSubmitLink', t.footerSubmitLink || (lang === 'ru' ? 'Разместить бренд' : 'List your brand'));
+  setText('footerAdvertiseLink', t.footerAdvertiseLink || (lang === 'ru' ? 'Для независимых ателье и бутиков' : 'For independent ateliers and boutiques'));
   setText('linkFooterJapan', t.destJapan);
   setText('linkFooterUae', t.destUae);
   setText('linkFooterThai', t.destThailand);
   setText('linkFooterBali', t.destBali);
 
   // Re-render
+  try { applyCustomDesignPanels(); } catch (e) {}
   try { renderSpotlight(); } catch (e) {}
   try { renderSpots(); } catch (e) {}
   try { renderWalkingTours(); } catch (e) {}
@@ -543,7 +609,11 @@ function updateMapTiles() {
       map.removeLayer(currentTileLayer);
     }
 
-    currentTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    const tileUrl = state.theme === 'dark'
+      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+      : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+
+    currentTileLayer = L.tileLayer(tileUrl, {
       attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap',
       maxZoom: 19,
       subdomains: 'abcd'
@@ -564,7 +634,13 @@ function renderMapMarkers(spots) {
 
     spots.forEach((spot, index) => {
       const coords = spot.coordinates;
-      latLngs.push(coords);
+      if (!coords || !Array.isArray(coords) || coords.length < 2) return;
+      const lat = parseFloat(coords[0]);
+      const lng = parseFloat(coords[1]);
+      if (isNaN(lat) || isNaN(lng) || !isFinite(lat) || !isFinite(lng)) return;
+
+      const validCoord = [lat, lng];
+      latLngs.push(validCoord);
 
       const isSelected = state.selectedSpotId === spot.id;
 
@@ -580,7 +656,7 @@ function renderMapMarkers(spots) {
         popupAnchor: [0, -30]
       });
 
-      const marker = L.marker(coords, { icon: customIcon });
+      const marker = L.marker(validCoord, { icon: customIcon });
       const districtName = typeof spot.district === 'object' ? (spot.district[state.lang] || spot.district.en) : spot.district;
 
       const popupContent = `
@@ -601,10 +677,12 @@ function renderMapMarkers(spots) {
       markersLayer.addLayer(marker);
     });
 
-    if (latLngs.length > 1) {
-      map.fitBounds(latLngs, { padding: [40, 40], maxZoom: 14 });
-    } else if (latLngs.length === 1) {
-      map.setView(latLngs[0], 14);
+    if (state.view !== 'grid') {
+      if (latLngs.length > 1) {
+        map.fitBounds(latLngs, { padding: [40, 40], maxZoom: 14 });
+      } else if (latLngs.length === 1) {
+        map.setView(latLngs[0], 14);
+      }
     }
   } catch (e) {
     console.warn('Render map markers failed gracefully:', e);
@@ -716,14 +794,14 @@ function renderSpots() {
       <div class="country-insider-banner" style="grid-column: 1 / -1;">
         <div>
           <div style="font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; color: var(--color-red-ochre); text-transform: uppercase;">
-            ${cData.flag} ${countryName} Guide & Phrasebook
+            ${countryName} — Guide & Phrasebook
           </div>
           <div style="font-size: 0.88rem; color: var(--text-secondary); margin-top: 0.2rem;">
-            Local shopping phrases with pronunciation, taxi navigation app, and payment / tax-free rules.
+            Local shopping phrases, navigation hints, and payment rules.
           </div>
         </div>
         <button class="quick-copy-taxi-btn" onclick="window.openCountryGuideModal('${state.city}')">
-          <span>Open ${cData.flag} Phrasebook & Tips →</span>
+          <span>Open Guide & Phrases →</span>
         </button>
       </div>
     `;
@@ -765,16 +843,9 @@ function renderSpots() {
 
           <p class="card-curator-snippet">${curatorNote}</p>
 
-          ${touristPerk ? `
-            <div class="card-perk-badge">
-              <span>🎁</span>
-              <span><strong>Perk:</strong> ${touristPerk}</span>
-            </div>
-          ` : ''}
-
           <div class="card-footer">
-            <span class="card-address-hint">📍 ${spot.address.split(',')[0]}</span>
-            <span class="card-details-cta">Insider Dossier →</span>
+            <span class="card-address-hint">${spot.address.split(',')[0]}</span>
+            <span class="card-details-cta">Dossier →</span>
           </div>
         </div>
       </article>
@@ -805,11 +876,11 @@ function openSpotDrawer(spotId) {
     card.classList.toggle('selected-active', card.dataset.id === spotId);
   });
 
-  if (map && Array.isArray(spot.coordinates) && spot.coordinates.length === 2) {
+  if (map && state.view !== 'grid' && Array.isArray(spot.coordinates) && spot.coordinates.length === 2) {
     try {
       const lat = parseFloat(spot.coordinates[0]);
       const lng = parseFloat(spot.coordinates[1]);
-      if (!isNaN(lat) && !isNaN(lng)) {
+      if (!isNaN(lat) && !isNaN(lng) && isFinite(lat) && isFinite(lng)) {
         map.flyTo([lat, lng], 15, { duration: 1.2 });
       }
     } catch (e) {
@@ -851,7 +922,7 @@ function openSpotDrawer(spotId) {
     <!-- Curator Review -->
     <div style="background-color: var(--bg-surface); padding: 1.1rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
       <div style="font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--color-red-ochre); margin-bottom: 0.3rem;">
-        ★ ${t.curatorReviewTitle}
+        ${t.curatorReviewTitle}
       </div>
       <p style="font-size: 0.95rem; line-height: 1.55; color: var(--text-primary); font-style: italic;">
         "${curatorNote}"
@@ -866,21 +937,6 @@ function openSpotDrawer(spotId) {
       </span>
       <p class="box-desc">${howToFind}</p>
     </div>
-
-    <!-- Tourist Voucher Perk -->
-    ${touristPerk ? `
-      <div class="tourist-voucher-box">
-        <span class="voucher-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><circle cx="18" cy="12" r="2"/></svg>
-          ${t.touristPerkTitle}
-        </span>
-        <p style="font-size: 0.88rem; color: var(--text-secondary);">${t.showVoucherPrompt}</p>
-        <div class="voucher-code-badge">
-          <span>${touristPerk}</span>
-          <button class="quick-copy-taxi-btn" onclick="window.copyVoucherCode('CHEREVICHKA')">Copy Code</button>
-        </div>
-      </div>
-    ` : ''}
 
     <!-- Address & Taxi Helper -->
     <div class="address-helper-box">
@@ -1020,7 +1076,7 @@ function renderWalkingTours() {
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <span class="tour-pill">${city}</span>
           <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">
-            ⏱️ ${tour.duration} • 🚶 ${tour.distance}
+            ${tour.duration} • ${tour.distance}
           </span>
         </div>
         <h3 class="tour-title">${title}</h3>
@@ -1047,7 +1103,6 @@ function renderSurvivalCountryTabs() {
     const isActive = state.survivalCountry === cKey;
     return `
       <button class="survival-tab-btn ${isActive ? 'active' : ''}" data-survival-country="${cKey}">
-        <span>${cData.flag}</span>
         <span>${name}</span>
       </button>
     `;
@@ -1090,7 +1145,7 @@ function renderSurvivalTips() {
     return `
       <div class="tip-item-card">
         <div class="tip-title">
-          <span style="font-family: var(--font-mono); font-size: 0.72rem; background: var(--color-red-ochre-light); color: var(--color-red-ochre); padding: 0.2rem 0.6rem; border-radius: var(--radius-full); font-weight: 700;">${cData.flag} ${cData.key.toUpperCase()}</span>
+          <span style="font-family: var(--font-mono); font-size: 0.72rem; background: var(--color-red-ochre-light); color: var(--color-red-ochre); padding: 0.2rem 0.6rem; border-radius: var(--radius-full); font-weight: 700;">${cData.key.toUpperCase()}</span>
           <span>${title}</span>
         </div>
         ${bodyHtml}
@@ -1170,13 +1225,13 @@ function resetFilters() {
   state.style = 'all';
   state.price = 'all';
   state.searchQuery = '';
-  searchInput.value = '';
+  if (searchInput) searchInput.value = '';
 
   document.querySelectorAll('.city-btn').forEach(b => b.classList.toggle('active', b.dataset.city === 'all'));
   document.querySelectorAll('.discipline-tab').forEach(b => b.classList.toggle('active', b.dataset.category === 'all'));
-  document.querySelectorAll('.style-chip').forEach(b => b.classList.toggle('active', b.dataset.style === 'all'));
   document.querySelectorAll('.price-btn').forEach(b => b.classList.toggle('active', b.dataset.price === 'all'));
 
+  updateStyleControlUI();
   renderSpots();
 }
 
@@ -1270,14 +1325,68 @@ function setupEventListeners() {
     renderSpots();
   });
 
-  // Style Filter Chips
-  styleChips?.addEventListener('click', (e) => {
-    const chip = e.target.closest('.style-chip');
-    if (!chip) return;
-    document.querySelectorAll('.style-chip').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    state.style = chip.dataset.style;
+  // Style Dropdown Toggle (Desktop popover vs Mobile bottom sheet)
+  styleDropdownBtn?.addEventListener('click', (e) => {
+    if (e.target.closest('#styleResetBtn')) return; // Handled separately
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      styleSheetOverlay?.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    } else {
+      styleDropdownContainer?.classList.toggle('open');
+      const isOpen = styleDropdownContainer?.classList.contains('open');
+      styleDropdownBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    }
+  });
+
+  // Style Selection (Desktop Popover & Mobile Sheet items)
+  const handleStyleSelect = (styleVal) => {
+    state.style = styleVal;
+    updateStyleControlUI();
+    styleDropdownContainer?.classList.remove('open');
+    styleDropdownBtn?.setAttribute('aria-expanded', 'false');
+    styleSheetOverlay?.classList.remove('active');
+    document.body.style.overflow = '';
     renderSpots();
+  };
+
+  styleDropdownMenu?.addEventListener('click', (e) => {
+    const item = e.target.closest('.style-menu-item');
+    if (!item) return;
+    handleStyleSelect(item.dataset.style);
+  });
+
+  document.getElementById('styleSheetList')?.addEventListener('click', (e) => {
+    const item = e.target.closest('.sheet-item');
+    if (!item) return;
+    handleStyleSelect(item.dataset.style);
+  });
+
+  // Isolated Style Reset (Click on 'x' on trigger)
+  styleResetBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    handleStyleSelect('all');
+  });
+
+  // Close Mobile Sheet
+  closeStyleSheetBtn?.addEventListener('click', () => {
+    styleSheetOverlay?.classList.remove('active');
+    document.body.style.overflow = '';
+  });
+
+  styleSheetOverlay?.addEventListener('click', (e) => {
+    if (e.target === styleSheetOverlay) {
+      styleSheetOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  });
+
+  // Close desktop dropdown on outside click
+  document.addEventListener('click', (e) => {
+    if (styleDropdownContainer && !styleDropdownContainer.contains(e.target)) {
+      styleDropdownContainer.classList.remove('open');
+      styleDropdownBtn?.setAttribute('aria-expanded', 'false');
+    }
   });
 
   // Price Filters
@@ -1388,12 +1497,20 @@ function setupEventListeners() {
       const t = allI18n[state.lang] || allI18n.en;
 
       if (isMapActive) {
-        txtMobileToggleIcon.textContent = '📋';
-        txtMobileToggleText.textContent = t.mobileShowList || 'Show List';
-        if (map) setTimeout(() => map.invalidateSize(), 200);
+        if (txtMobileToggleIcon) txtMobileToggleIcon.textContent = '📋';
+        if (txtMobileToggleText) txtMobileToggleText.textContent = t.mobileShowList || 'Show List';
+        if (!map) {
+          initMap();
+        }
+        setTimeout(() => {
+          if (map) {
+            map.invalidateSize();
+            try { renderMapMarkers(getFilteredSpots()); } catch (e) {}
+          }
+        }, 120);
       } else {
-        txtMobileToggleIcon.textContent = '📍';
-        txtMobileToggleText.textContent = t.mobileShowMap || 'Show Map';
+        if (txtMobileToggleIcon) txtMobileToggleIcon.textContent = '📍';
+        if (txtMobileToggleText) txtMobileToggleText.textContent = t.mobileShowMap || 'Show Map';
       }
     });
   }
@@ -1401,6 +1518,12 @@ function setupEventListeners() {
   // Global ESC key listener
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
+      styleDropdownContainer?.classList.remove('open');
+      styleDropdownBtn?.setAttribute('aria-expanded', 'false');
+      if (styleSheetOverlay?.classList.contains('active')) {
+        styleSheetOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
       closeSpotDrawer();
       document.querySelectorAll('.modal-dialog-overlay.active').forEach(m => closeModal(m.id));
     }

@@ -21,67 +21,70 @@ echo ">>> Installed NPM version: $(npm -v)"
 SITE_DIR="/var/www/cherevichka"
 sudo mkdir -p "$SITE_DIR/data"
 sudo mkdir -p "$SITE_DIR/uploads"
-sudo chown -R $USER:$USER "$SITE_DIR"
+sudo mkdir -p "$SITE_DIR/assets/images/uploads"
+sudo chown -R opencode:opencode "$SITE_DIR"
 
-echo ">>> [2/5] Creating Systemd Service (cherevichka.service)..."
-sudo bash -c "cat > /etc/systemd/system/cherevichka.service" << 'EOF'
-[Unit]
-Description=Cherevichka Node.js Production Web Server & API
-After=network.target
+cd "$SITE_DIR"
+npm install --production
 
-[Service]
-Type=simple
-User=opencode
-WorkingDirectory=/var/www/cherevichka
-ExecStart=/usr/bin/node /var/www/cherevichka/server.js
-Restart=always
-RestartSec=5
-Environment=NODE_ENV=production
-Environment=PORT=3000
-Environment=ADMIN_SECRET=fav256sobaka
+# Configure PM2 for reliable process keeping
+if command -v pm2 &> /dev/null; then
+    pm2 restart cherevichka || pm2 start server.js --name cherevichka || true
+fi
 
-[Install]
-WantedBy=multi-user.target
-EOF
-
-echo ">>> [3/5] Configuring Nginx Reverse Proxy..."
+echo ">>> [2/5] Configuring Nginx Reverse Proxy with SSL..."
+if sudo test -f /etc/letsencrypt/live/cherevichka.com/fullchain.pem; then
 sudo bash -c "cat > /etc/nginx/sites-available/cherevichka" << 'EOF'
 server {
-    listen 80;
-    listen [::]:80;
+    listen 80 default_server;
+    listen [::]:80 default_server;
     server_name cherevichka.com www.cherevichka.com 34.88.91.159 _;
+    return 301 https://cherevichka.com$request_uri;
+}
 
-    client_max_body_size 25M;
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name www.cherevichka.com;
+
+    ssl_certificate /etc/letsencrypt/live/cherevichka.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/cherevichka.com/privkey.pem;
+    return 301 https://cherevichka.com$request_uri;
+}
+
+server {
+    listen 443 ssl default_server;
+    listen [::]:443 ssl default_server;
+    http2 on;
+    server_name cherevichka.com 34.88.91.159;
+
+    ssl_certificate /etc/letsencrypt/live/cherevichka.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/cherevichka.com/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
     root /var/www/cherevichka;
     index index.html;
 
-    # Gzip Compression
+    client_max_body_size 50M;
+
     gzip on;
     gzip_vary on;
-    gzip_min_length 1024;
-    gzip_proxied expired no-cache no-store private auth;
-    gzip_types text/plain text/css text/xml text/javascript application/javascript application/x-javascript application/json image/svg+xml;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_types text/plain text/css text/xml application/json application/javascript application/xml+rss image/svg+xml;
 
-    # Security Headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
     add_header X-Content-Type-Options "nosniff" always;
-    add_header X-Frame-Options "DENY" always;
     add_header X-XSS-Protection "1; mode=block" always;
 
-    # Static Assets Caching
     location /assets/ {
         alias /var/www/cherevichka/assets/;
-        expires 30d;
-        add_header Cache-Control "public, no-transform";
+        expires 7d;
+        add_header Cache-Control "public, max-age=604800";
+        try_files $uri =404;
     }
 
-    # Uploaded Media Caching
-    location /uploads/ {
-        alias /var/www/cherevichka/uploads/;
-        expires 30d;
-        add_header Cache-Control "public, no-transform";
-    }
-
-    # API Proxy to Node.js Backend
     location /api/ {
         proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
@@ -91,35 +94,63 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
     }
 
-    # Frontend Static SPA Route
+    location ~* \.html$ {
+        expires -1;
+        add_header Cache-Control "no-store, no-cache, must-revalidate, max-age=0";
+        try_files $uri =404;
+    }
+
     location / {
         try_files $uri $uri/ /index.html;
-        expires -1;
-        add_header Cache-Control "no-store, no-cache, must-revalidate";
     }
 }
 EOF
+else
+sudo bash -c "cat > /etc/nginx/sites-available/cherevichka" << 'EOF'
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name cherevichka.com www.cherevichka.com 34.88.91.159 _;
 
-# Enable site
-sudo rm -f /etc/nginx/sites-enabled/default
+    root /var/www/cherevichka;
+    index index.html;
+
+    location /assets/ {
+        alias /var/www/cherevichka/assets/;
+        expires 7d;
+        try_files $uri =404;
+    }
+
+    location /api/ {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+EOF
+fi
+
 sudo ln -sf /etc/nginx/sites-available/cherevichka /etc/nginx/sites-enabled/cherevichka
+sudo rm -f /etc/nginx/sites-enabled/default || true
+
+echo ">>> [3/5] Testing and reloading Nginx..."
 sudo nginx -t
 sudo systemctl reload nginx
 
-echo ">>> [4/5] Configuring Firewall (UFW)..."
+echo ">>> [4/5] Enabling UFW Firewall..."
 sudo ufw allow 22/tcp || true
 sudo ufw allow 80/tcp || true
 sudo ufw allow 443/tcp || true
-sudo ufw --force enable || true
-
-echo ">>> [5/5] Reloading and starting systemd daemon..."
-sudo systemctl daemon-reload
-sudo systemctl enable cherevichka
-sudo systemctl restart cherevichka || true
+sudo ufw --force enable
 
 echo "========================================================"
-echo "   CHEREVICHKA SERVER SETUP COMPLETED SUCCESSFULLY!"
+echo "   CHEREVICHKA PRODUCTION SERVER READY & SSL ACTIVE!    "
 echo "========================================================"

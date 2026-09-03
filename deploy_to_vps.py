@@ -2,6 +2,11 @@ import subprocess
 import os
 import sys
 
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8')
+
 VPS_IP = "34.88.91.159"
 USER = "opencode"
 KEY_PATH = os.path.expanduser("~/.ssh/id_ed25519_gcp")
@@ -32,7 +37,7 @@ def run_ssh(cmd):
         f"{USER}@{VPS_IP}",
         cmd
     ]
-    return subprocess.run(full_cmd, capture_output=True, text=True)
+    return subprocess.run(full_cmd, capture_output=True, encoding='utf-8', errors='ignore')
 
 def main():
     print(f"[*] Starting Deployment to Google Cloud VM: {VPS_IP}...")
@@ -56,23 +61,23 @@ def main():
         "-r"
     ] + scp_files + DIRS_TO_SYNC + [f"{USER}@{VPS_IP}:/var/www/cherevichka/"]
     
-    res = subprocess.run(scp_cmd, capture_output=True, text=True)
+    res = subprocess.run(scp_cmd, capture_output=True, encoding='utf-8', errors='ignore')
     if res.returncode != 0:
         print(f"[!] File upload warning/error: {res.stderr}")
     else:
         print("[+] Files uploaded successfully.")
 
     # 4. Run setup script on remote server
-    print("[*] Provisioning and configuring Nginx & Systemd...")
+    print("[*] Provisioning and configuring Nginx & Node server...")
     setup_res = run_ssh("chmod +x /var/www/cherevichka/setup_server.sh && /var/www/cherevichka/setup_server.sh")
     print(setup_res.stdout)
     if setup_res.returncode != 0:
         print(f"[!] Setup warning: {setup_res.stderr}")
 
     # 5. Check Service Status
-    status_res = run_ssh("systemctl is-active cherevichka && systemctl is-active nginx")
+    status_res = run_ssh("pm2 list && sudo systemctl status nginx --no-pager")
     print(f"[+] Service status:\n{status_res.stdout}")
-    print("[SUCCESS] Deployment Complete! Site is live on http://34.88.91.159")
+    print("[SUCCESS] Deployment Complete! Site is live on https://cherevichka.com")
 
 if __name__ == "__main__":
     main()

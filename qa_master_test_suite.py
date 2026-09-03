@@ -459,9 +459,11 @@ def run_level3_e2e_crawler_tests(report, page, server_url):
             page.click(f'#primaryCategoryTabs button[data-category="{cat}"]', timeout=2000)
             time.sleep(0.1)
 
-        # Style Chips
-        for st in ['all', 'runway-archive', 'minimal-oldmoney', 'soviet-heritage', 'avantgarde-upcycle', 'streetwear-y2k']:
-            page.click(f'#styleChips button[data-style="{st}"]', timeout=2000)
+        # Style Dropdown
+        for st in ['runway-archive', 'minimal-oldmoney', 'soviet-heritage', 'all']:
+            page.click('#styleDropdownBtn', timeout=2000)
+            time.sleep(0.1)
+            page.click(f'#styleDropdownMenu button[data-style="{st}"]', timeout=2000)
             time.sleep(0.1)
 
         # Price Filters

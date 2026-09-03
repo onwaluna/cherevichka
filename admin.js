@@ -833,6 +833,9 @@ function initDesignPanels() {
   const pickerHeroSubtitleColor = document.getElementById('pickerHeroSubtitleColor');
   const hexHeroSubtitleColor = document.getElementById('hexHeroSubtitleColor');
 
+  const heroPreviewTitle = document.getElementById('heroPreviewTitle');
+  const heroPreviewSubtitle = document.getElementById('heroPreviewSubtitle');
+
   if (p.hero.bgImage) {
     inpHeroBgUrl.value = p.hero.bgImage;
     heroPreviewBanner.style.backgroundImage = `url('${p.hero.bgImage}')`;
@@ -840,10 +843,12 @@ function initDesignPanels() {
   if (p.hero.titleColor && pickerHeroTitleColor) {
     pickerHeroTitleColor.value = p.hero.titleColor;
     hexHeroTitleColor.value = p.hero.titleColor;
+    if (heroPreviewTitle) heroPreviewTitle.style.color = p.hero.titleColor;
   }
   if (p.hero.subtitleColor && pickerHeroSubtitleColor) {
     pickerHeroSubtitleColor.value = p.hero.subtitleColor;
     hexHeroSubtitleColor.value = p.hero.subtitleColor;
+    if (heroPreviewSubtitle) heroPreviewSubtitle.style.color = p.hero.subtitleColor;
   }
 
   rangeHeroOverlay.value = p.hero.overlayOpacity || 45;
@@ -854,6 +859,9 @@ function initDesignPanels() {
     pickerHeroTitleColor.addEventListener('input', (e) => {
       p.hero.titleColor = e.target.value;
       hexHeroTitleColor.value = e.target.value.toUpperCase();
+      if (heroPreviewTitle) heroPreviewTitle.style.color = e.target.value;
+      safeStorage.set('cherevichka_design_panels', state.designPanels);
+      publishConfigToCloud({ designPanels: state.designPanels });
     });
     hexHeroTitleColor.addEventListener('input', (e) => {
       let val = e.target.value.trim();
@@ -861,6 +869,9 @@ function initDesignPanels() {
       if (val.length === 7) {
         p.hero.titleColor = val;
         pickerHeroTitleColor.value = val;
+        if (heroPreviewTitle) heroPreviewTitle.style.color = val;
+        safeStorage.set('cherevichka_design_panels', state.designPanels);
+        publishConfigToCloud({ designPanels: state.designPanels });
       }
     });
   }
@@ -869,6 +880,9 @@ function initDesignPanels() {
     pickerHeroSubtitleColor.addEventListener('input', (e) => {
       p.hero.subtitleColor = e.target.value;
       hexHeroSubtitleColor.value = e.target.value.toUpperCase();
+      if (heroPreviewSubtitle) heroPreviewSubtitle.style.color = e.target.value;
+      safeStorage.set('cherevichka_design_panels', state.designPanels);
+      publishConfigToCloud({ designPanels: state.designPanels });
     });
     hexHeroSubtitleColor.addEventListener('input', (e) => {
       let val = e.target.value.trim();
@@ -876,9 +890,26 @@ function initDesignPanels() {
       if (val.length === 7) {
         p.hero.subtitleColor = val;
         pickerHeroSubtitleColor.value = val;
+        if (heroPreviewSubtitle) heroPreviewSubtitle.style.color = val;
+        safeStorage.set('cherevichka_design_panels', state.designPanels);
+        publishConfigToCloud({ designPanels: state.designPanels });
       }
     });
   }
+
+  // Quick preset swatches for hero title
+  document.querySelectorAll('[data-hero-title-preset]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const col = btn.dataset.heroTitlePreset;
+      p.hero.titleColor = col;
+      if (pickerHeroTitleColor) pickerHeroTitleColor.value = col;
+      if (hexHeroTitleColor) hexHeroTitleColor.value = col.toUpperCase();
+      if (heroPreviewTitle) heroPreviewTitle.style.color = col;
+      safeStorage.set('cherevichka_design_panels', state.designPanels);
+      publishConfigToCloud({ designPanels: state.designPanels });
+      showToast(`Selected title color ${col}`);
+    });
+  });
 
   // Quick preset swatches for hero subtitle
   document.querySelectorAll('[data-hero-sub-preset]').forEach(btn => {
@@ -886,7 +917,10 @@ function initDesignPanels() {
       const col = btn.dataset.heroSubPreset;
       p.hero.subtitleColor = col;
       if (pickerHeroSubtitleColor) pickerHeroSubtitleColor.value = col;
-      if (hexHeroSubtitleColor) hexHeroSubtitleColor.value = col;
+      if (hexHeroSubtitleColor) hexHeroSubtitleColor.value = col.toUpperCase();
+      if (heroPreviewSubtitle) heroPreviewSubtitle.style.color = col;
+      safeStorage.set('cherevichka_design_panels', state.designPanels);
+      publishConfigToCloud({ designPanels: state.designPanels });
       showToast(`Selected subtitle color ${col}`);
     });
   });
