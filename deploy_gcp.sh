@@ -1,8 +1,17 @@
 #!/bin/bash
 set -e
 
-echo "=== 1. Creating Nginx Configuration with SSL ==="
+echo "=== 1. Updating Nginx with Canonical Redirect for WWW ==="
 cat << 'EOF' > /tmp/cherevichka_nginx.conf
+# 1. Canonical Redirect www -> non-www
+server {
+    listen 80;
+    listen [::]:80;
+    server_name www.cherevichka.com;
+    return 301 https://cherevichka.com$request_uri;
+}
+
+# 2. Main Production HTTPS Server (cherevichka.com)
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
@@ -13,7 +22,7 @@ server {
     ssl_certificate_key /etc/nginx/ssl/cherevichka.key;
     ssl_protocols TLSv1.2 TLSv1.3;
 
-    server_name cherevichka.com www.cherevichka.com 34.88.91.159 _;
+    server_name cherevichka.com 34.88.91.159 _;
 
     root /var/www/cherevichka;
     index index.html;
@@ -79,7 +88,4 @@ sudo mv /tmp/cherevichka_nginx.conf /etc/nginx/sites-available/cherevichka
 sudo ln -sf /etc/nginx/sites-available/cherevichka /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
-
-echo "=== 2. Checking Nginx Ports ==="
-sudo ss -tulpn | grep nginx
-echo "=== NGINX SSL CONFIG APPLIED ==="
+echo "=== NGINX REDIRECT APPLIED ==="
